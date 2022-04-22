@@ -3,9 +3,9 @@ const contactsData = new webix.DataCollection({
 	save: "rest->http://localhost:8096/api/v1/contacts/",
 	scheme: {
 		$init() {
-			contactsData.data.each(obj => {
-				obj.value = `${obj.FirstName + " " + obj.LastName}`
-			})
+			contactsData.data.each((obj) => {
+				obj.value = `${`${obj.FirstName} ${obj.LastName}`}`;
+			});
 		}
 	}
 });

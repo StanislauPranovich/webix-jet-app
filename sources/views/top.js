@@ -1,4 +1,4 @@
-import { JetView, plugins } from "webix-jet";
+import {JetView, plugins} from "webix-jet";
 
 
 export default class TopView extends JetView {
@@ -32,7 +32,7 @@ export default class TopView extends JetView {
 					value: "Settings",
 					id: "settings",
 					icon: "fas fa-bars"
-				},
+				}
 			]
 		};
 
@@ -54,7 +54,7 @@ export default class TopView extends JetView {
 					paddingY: 10,
 					paddingX: 5,
 					rows: [
-						{ $subview: true }
+						{$subview: true}
 					]
 				}
 			]

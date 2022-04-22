@@ -3,9 +3,9 @@ const activitiesTypeData = new webix.DataCollection({
 	save: "rest->http://localhost:8096/api/v1/activitytypes/",
 	scheme: {
 		$init() {
-			activitiesTypeData.data.each(obj=> {
+			activitiesTypeData.data.each((obj) => {
 				obj.value = obj.Value;
-			})
+			});
 		}
 	}
 });
