@@ -96,14 +96,10 @@ export default class ActivitiesPopup extends JetView {
 		}
 	}
 
-	closeWindow() {
-		this.getRoot().close();
-	}
-
 	clearForm() {
 		this.$getForm().clear();
 		this.$getForm().clearValidation();
-		this.getRoot().hide();
+		this.$getForm().hide();
 	}
 
 	getFormData() {
