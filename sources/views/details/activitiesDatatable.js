@@ -89,5 +89,8 @@ export default class ActivitiesDatatable extends JetView {
 
 	init() {
 		this.$getActivitiesTable().sync(activitiesData);
+        this.on(activitiesData.data, "onStoreUpdated", ()=> {
+            this.$getActivitiesTable().filterByAll();
+        })
 	}
 }
