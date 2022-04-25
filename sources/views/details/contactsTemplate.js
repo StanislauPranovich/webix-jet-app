@@ -1,4 +1,4 @@
-import { JetView } from "webix-jet";
+import {JetView} from "webix-jet";
 
 import contactsData from "../../models/contactsData";
 import statusesData from "../../models/statusesData";
@@ -57,7 +57,7 @@ export default class ContactsTemplate extends JetView {
 	createLabel(label, title, style) {
 		return {
 			view: "label",
-			label: label,
+			label,
 			name: title,
 			css: style
 		};
@@ -80,10 +80,10 @@ export default class ContactsTemplate extends JetView {
 		]).then(() => {
 			if (contactId) {
 				this.$getContactsTemplate().parse(contactsData.getItem(contactId));
-				contactsData.data.each(obj => {
+				contactsData.data.each((obj) => {
 					obj.StatusID = statusesData.getItem(obj.StatusID).value;
-				})
+				});
 			}
-		})
+		});
 	}
 }
