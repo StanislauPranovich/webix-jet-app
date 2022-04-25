@@ -89,17 +89,19 @@ export default class ActivitiesPopup extends JetView {
 	}
 
 	showWindow(id) {
+        const form = this.$getForm();
 		this.rowID = id;
-		this.getRoot().show();
+		form.show();
 		if (this.name === "Edit") {
-			this.$getForm().setValues(activitiesData.getItem(this.rowID));
+			form.setValues(activitiesData.getItem(this.rowID));
 		}
 	}
 
 	clearForm() {
-		this.$getForm().clear();
-		this.$getForm().clearValidation();
-		this.$getForm().hide();
+        const form = this.$getForm();
+		form.clear();
+		form.clearValidation();
+		form.hide();
 	}
 
 	getFormData() {
