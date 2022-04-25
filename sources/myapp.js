@@ -16,5 +16,9 @@ export default class MyApp extends JetApp {
 }
 
 if (!BUILD_AS_MODULE) {
-	webix.ready(() => new MyApp().render());
+	const app = new MyApp();
+	app.attachEvent("app:error:resolve", () => {
+		webix.delay(() => app.show("/top/contacts"));
+	});
+	webix.ready(() => app.render());
 }

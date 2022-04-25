@@ -1,13 +1,13 @@
+import statusesData from "./statusesData";
+
 const contactsData = new webix.DataCollection({
 	url: "http://localhost:8096/api/v1/contacts/",
 	save: "rest->http://localhost:8096/api/v1/contacts/",
 	scheme: {
-		$init() {
-			contactsData.data.each((obj) => {
-				obj.value = `${`${obj.FirstName} ${obj.LastName}`}`;
-			});
+		$init(obj) {
+			obj.value = `${`${obj.FirstName} ${obj.LastName}`}`;
+			obj.StatusID = statusesData.getItem(obj.StatusID).value;
 		}
 	}
 });
-
 export default contactsData;

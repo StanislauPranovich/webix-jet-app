@@ -46,7 +46,7 @@ export default class ActivitiesPopup extends JetView {
 								view: "datepicker",
 								label: "Date",
 								timepicker: true,
-								name: "DueDate",
+								name: "dateObj",
 								required: true
 							},
 							{
@@ -60,17 +60,16 @@ export default class ActivitiesPopup extends JetView {
 						view: "button",
 						value: `${this.buttonName}`,
 						click: () => {
-							if (this.name === "Edit" && this.$getForm().validate()) {
-								activitiesData.updateItem(this.rowID, this.getFormData());
-								this.$getForm().clear();
-								this.$getForm().clearValidation();
-								this.hideWindow();
+							const form = this.$getForm();
+							const values = this.getFormData();
+							if (form.validate() && this.name === "Edit") {
+								activitiesData.updateItem(this.rowID, values);
+								this.clearForm();
+								this.closeWindow();
 							}
-							else if (this.$getForm().isDirty() && this.$getForm().validate()) {
-								this.getFormData();
-								this.addDataToCollection();
-								this.$getForm().clear();
-								this.$getForm().clearValidation();
+							else if (form.isDirty() && form.validate()) {
+								activitiesData.add(values);
+								this.clearForm();
 								this.hideWindow();
 							}
 						}
@@ -79,9 +78,14 @@ export default class ActivitiesPopup extends JetView {
 						view: "button",
 						value: "Cancel",
 						click: () => {
-							this.$getForm().clear();
-							this.$getForm().clearValidation();
-							this.hideWindow();
+							if (this.name === "Edit") {
+								this.clearForm();
+								this.closeWindow();
+							}
+							else {
+								this.clearForm();
+								this.hideWindow();
+							}
 						}
 					}
 				]
@@ -101,14 +105,16 @@ export default class ActivitiesPopup extends JetView {
 		this.getRoot().hide();
 	}
 
+	closeWindow() {
+		this.getRoot().close();
+	}
+
+	clearForm() {
+		this.$getForm().clear();
+		this.$getForm().clearValidation();
+	}
+
 	init() {
-		this.webix.promise.all([
-			activitiesData.waitData,
-			contactsData.waitData
-		]).then(() => {
-			this.$getForm().sync(activitiesData);
-			this.$getForm().sync(contactsData);
-		});
 		if (this.name === "Edit") {
 			this.$getForm().setValues(activitiesData.getItem(this.rowID));
 		}
@@ -116,15 +122,8 @@ export default class ActivitiesPopup extends JetView {
 
 	getFormData() {
 		const dataObj = this.$getForm().getValues();
-		dataObj.DueDate = `${`${dataObj.DueDate.getFullYear()}-${
-			dataObj.DueDate.getMonth() + 1 < 10 ? `0${dataObj.DueDate.getMonth() + 1}` : dataObj.DueDate.getMonth() + 1
-		}-${dataObj.DueDate.getDate() < 10 ? `0${dataObj.DueDate.getDate()}` : dataObj.DueDate.getDate()
-		} ${dataObj.DueDate.getHours() < 10 ? `0${dataObj.DueDate.getHours()}` : dataObj.DueDate.getHours()}:${
-			dataObj.DueDate.getMinutes() < 10 ? `0${dataObj.DueDate.getMinutes()}` : dataObj.DueDate.getMinutes()}`}`;
+		const formatDate = webix.Date.dateToStr("%Y-%m-%d %h:%i");
+		dataObj.DueDate = formatDate(dataObj.dateObj);
 		return dataObj;
-	}
-
-	addDataToCollection() {
-		activitiesData.add(this.getFormData());
 	}
 }

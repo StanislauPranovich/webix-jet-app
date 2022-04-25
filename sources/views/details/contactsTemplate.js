@@ -1,8 +1,6 @@
 import {JetView} from "webix-jet";
 
 import contactsData from "../../models/contactsData";
-import ContactsButton from "./contactsButton";
-import ContactsLabel from "./contactsLabel";
 
 export default class ContactsTemplate extends JetView {
 	config() {
@@ -12,10 +10,10 @@ export default class ContactsTemplate extends JetView {
 			rows: [
 				{
 					cols: [
-						new ContactsLabel(this.app, "FirstName", "FirstName", true, "margin-right"),
-						new ContactsLabel(this.app, "LastName", "LastName"),
-						new ContactsButton(this.app, "<span class='fas fa-trash'></span> Delete", "webix_primary", true),
-						new ContactsButton(this.app, "<span class='fas fa-pen'></span> Edit", "webix_primary", true)
+						this.createLabel("FirstName", "FirstName", "text-align-end"),
+						this.createLabel("LastName", "LastName"),
+						this.createButton("<span class='fas fa-trash'></span> Delete", "webix_primary", true),
+						this.createButton("<span class='fas fa-pen'></span> Edit", "webix_primary", true)
 					]
 				},
 				{
@@ -27,21 +25,21 @@ export default class ContactsTemplate extends JetView {
 									name: "Photo",
 									height: 150
 								},
-								new ContactsLabel(this.app, "Status", "StatusID", false, "text-align")
+								this.createLabel("Status", "StatusID", "text-align-center")
 							]
 						},
 						{
 							rows: [
-								new ContactsLabel(this.app, "Email", "Email", false, "text-align"),
-								new ContactsLabel(this.app, "Skype", "Skype", false, "text-align"),
-								new ContactsLabel(this.app, "Job", "Job", false, "text-align"),
-								new ContactsLabel(this.app, "Company", "Company", false, "text-align")
+								this.createLabel("Email", "Email", "text-align-center"),
+								this.createLabel("Skype", "Skype", "text-align-center"),
+								this.createLabel("Job", "Job", "text-align-center"),
+								this.createLabel("Company", "Company", "text-align-center")
 							]
 						},
 						{
 							rows: [
-								new ContactsLabel(this.app, "Birthday", "Birthday", false, "text-align"),
-								new ContactsLabel(this.app, "Address", "Address", false, "text-align")
+								this.createLabel("Birthday", "Birthday", "text-align-center"),
+								this.createLabel("Address", "Address", "text-align-center")
 							]
 						}
 					]
@@ -53,6 +51,24 @@ export default class ContactsTemplate extends JetView {
 
 	$getContactsTemplate() {
 		return this.$$("contactsTemplate");
+	}
+
+	createLabel(label, title, style) {
+		return {
+			view: "label",
+			label,
+			name: title,
+			css: style
+		};
+	}
+
+	createButton(value, style, active) {
+		return {
+			view: "button",
+			value,
+			css: style,
+			disabled: active
+		};
 	}
 
 	urlChange() {

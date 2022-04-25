@@ -5,6 +5,12 @@ import activitiesTypeData from "../../models/activitiesTypeData";
 import contactsData from "../../models/contactsData";
 import ActivitiesPopup from "./activitiesPopup";
 
+
+const compareDate = (value, filter) => {
+	const formatDate = webix.Date.dateToStr("%Y-%m-%d");
+	return formatDate(value) === formatDate(filter);
+};
+
 export default class ActivitiesDatatable extends JetView {
 	config() {
 		return {
@@ -18,20 +24,21 @@ export default class ActivitiesDatatable extends JetView {
 					header: "",
 					template: "{common.checkbox()}",
 					editor: "checkbox",
-					checkValue: `${"1" || "Close"}`,
-					uncheckValue: `${"0" || "Open"}`
+					checkValue: "1",
+					uncheckValue: "0"
 				},
 				{
 					id: "TypeID",
 					header: ["Activity type", {content: "selectFilter"}],
-					sort: "int",
+					sort: "text",
 					collection: activitiesTypeData
 				},
 				{
-					id: "DueDate",
-					header: ["Due date", {content: "datepickerFilter"}],
-					sort: "int",
-					fillspace: true
+					id: "dateObj",
+					header: ["Due date", {content: "datepickerFilter", compare: compareDate}],
+					sort: "date",
+					fillspace: true,
+					format: webix.Date.dateToStr("%Y-%m-%d %h:%i")
 				},
 				{
 					id: "Details",
@@ -42,7 +49,7 @@ export default class ActivitiesDatatable extends JetView {
 				{
 					id: "ContactID",
 					header: ["Contact", {content: "selectFilter"}],
-					sort: "string",
+					sort: "text",
 					collection: contactsData,
 					fillspace: true
 				},
