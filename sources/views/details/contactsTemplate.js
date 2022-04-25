@@ -1,6 +1,7 @@
-import {JetView} from "webix-jet";
+import { JetView } from "webix-jet";
 
 import contactsData from "../../models/contactsData";
+import statusesData from "../../models/statusesData";
 
 export default class ContactsTemplate extends JetView {
 	config() {
@@ -25,7 +26,7 @@ export default class ContactsTemplate extends JetView {
 									name: "Photo",
 									height: 150
 								},
-								this.createLabel("Status", "StatusID", "text-align-center")
+								this.createLabel("Status", "StatusID", "text-align-center", statusesData, "#Value#")
 							]
 						},
 						{
@@ -56,7 +57,7 @@ export default class ContactsTemplate extends JetView {
 	createLabel(label, title, style) {
 		return {
 			view: "label",
-			label,
+			label: label,
 			name: title,
 			css: style
 		};
@@ -73,10 +74,16 @@ export default class ContactsTemplate extends JetView {
 
 	urlChange() {
 		const contactId = this.getParam("id");
-		contactsData.waitData.then(() => {
+		this.webix.promise.all([
+			contactsData.waitData,
+			statusesData.waitData
+		]).then(() => {
 			if (contactId) {
 				this.$getContactsTemplate().parse(contactsData.getItem(contactId));
+				contactsData.data.each(obj => {
+					obj.StatusID = statusesData.getItem(obj.StatusID).value;
+				})
 			}
-		});
+		})
 	}
 }

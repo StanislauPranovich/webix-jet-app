@@ -6,7 +6,6 @@ const contactsData = new webix.DataCollection({
 	scheme: {
 		$init(obj) {
 			obj.value = `${`${obj.FirstName} ${obj.LastName}`}`;
-			obj.StatusID = statusesData.getItem(obj.StatusID).value;
 		}
 	}
 });
