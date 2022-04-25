@@ -17,7 +17,12 @@ export default class ActivitiesPopup extends JetView {
 			position: "center",
 			body: {
 				rows: [
-					{view: "template", template: `${this.name} activity`, type: "header", css: "text-align-center"},
+					{
+						view: "template",
+						template: `${this.name} activity`,
+						type: "header",
+						css: "text-align-center"
+					},
 					{
 						view: "form",
 						localId: "formInPopup",

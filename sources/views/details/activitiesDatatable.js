@@ -56,20 +56,20 @@ export default class ActivitiesDatatable extends JetView {
 				{
 					id: "edit",
 					header: "",
-					template: "<span class='fas fa-pen'></span>"
+					template: "<span class='fas fa-pen on_edit'></span>"
 				},
 				{
 					id: "delete",
 					header: "",
-					template: "<span class='fas fa-trash'></span>"
+					template: "<span class='fas fa-trash on_delete'></span>"
 				}
 			],
 			onClick: {
-				"fa-pen": (e, id) => {
+				on_edit: (e, id) => {
 					this.popup.showWindow(id);
 					return false;
 				},
-				"fa-trash": (e, id) => {
+				on_delete: (e, id) => {
 					this.webix.confirm({
 						title: "Deleting an entry",
 						text: "Do you want to delete entry?"
@@ -86,9 +86,10 @@ export default class ActivitiesDatatable extends JetView {
 	}
 
 	init() {
-		this.$getActivitiesTable().sync(activitiesData);
+		const table = this.$getActivitiesTable();
+		table.sync(activitiesData);
 		this.on(activitiesData.data, "onStoreUpdated", () => {
-			this.$getActivitiesTable().filterByAll();
+			table.filterByAll();
 		});
 		this.popup = this.ui(new ActivitiesPopup(this.app, "Edit", "Save"));
 	}
