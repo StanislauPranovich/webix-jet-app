@@ -2,7 +2,6 @@ import {JetView} from "webix-jet";
 
 import contactsData from "../../models/contactsData";
 import statusesData from "../../models/statusesData";
-import "../../images/not-found.png";
 
 export default class ContactsTemplate extends JetView {
 	config() {
