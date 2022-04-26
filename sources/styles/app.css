@@ -84,4 +84,8 @@
     display: flex;
     flex-flow: column;
     justify-content: space-between;
+    text-align: center;
+}
+.contactsInfoPhoto {
+    height: 150px;
 }

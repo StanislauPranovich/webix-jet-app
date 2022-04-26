@@ -1,7 +1,8 @@
-import { JetView } from "webix-jet";
+import {JetView} from "webix-jet";
 
 import contactsData from "../../models/contactsData";
 import statusesData from "../../models/statusesData";
+import "../../images/not-found.png";
 
 export default class ContactsTemplate extends JetView {
 	config() {
@@ -23,11 +24,14 @@ export default class ContactsTemplate extends JetView {
 				},
 				{
 					localId: "contactsTemplate",
-					template: obj => `
+					template: (obj) => {
+						const status = statusesData.getItem(obj.StatusID);
+						const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
+						return `
 						<div class="contactsInfo">
 							<div class="contactsInfoFirstColumn">
-								<img class="contactsInfoPhoto" src=${obj.Photo}  />
-								<p>${statusesData.getItem(obj.StatusID)?.value || "No Status"}</p>
+								<img class="contactsInfoPhoto" src=${obj.Photo || notFound} />
+								<p>${status ? status.value : "No Status"}</p>
 							</div>
 							<div>
 								<p><span class="fas fa-envelope"></span> ${obj.Email || "-"}</p>
@@ -39,7 +43,8 @@ export default class ContactsTemplate extends JetView {
 								<p><span class="fas fa-calendar"></span> ${obj.Birthday || "-"}</p>
 								<p><span class="fas fa-compass"></span> ${obj.Address || "-"}</p>
 							</div>
-						</div>`
+						</div>`;
+					}
 				}
 			]
 		};
@@ -56,7 +61,7 @@ export default class ContactsTemplate extends JetView {
 	createLabel(label, title, style) {
 		return {
 			view: "label",
-			label: label,
+			label,
 			name: title,
 			css: style
 		};
