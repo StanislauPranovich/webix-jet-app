@@ -71,3 +71,17 @@
 .text-align-end {
     text-align: end;
 }
+.contactsInfo {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.contactsInfo div {
+    display: flex;
+    flex-flow: column;
+}
+.contactsInfoFirstColumn {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+}
