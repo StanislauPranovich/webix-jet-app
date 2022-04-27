@@ -56,3 +56,36 @@
 	font-size:20px;
 	vertical-align:middle;
 }
+.fa-user {
+    margin-right: 10px;
+    vertical-align: sub;
+}
+.company-name {
+    margin: -15px 0px 0px 22px;
+    font-size: 12px;
+    color: gray;
+}
+.text-align-center {
+    text-align: center;
+}
+.text-align-end {
+    text-align: end;
+}
+.contactsInfo {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+.contactsInfo div {
+    display: flex;
+    flex-flow: column;
+}
+.contactsInfoFirstColumn {
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    text-align: center;
+}
+.contactsInfoPhoto {
+    height: 150px;
+}
