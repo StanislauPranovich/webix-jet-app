@@ -4,6 +4,8 @@ const contactsData = new webix.DataCollection({
 	scheme: {
 		$init(obj) {
 			obj.value = `${obj.FirstName} ${obj.LastName}`;
+			obj.dayOfBirth = new Date(obj.Birthday);
+			obj.dayOfStart = new Date(obj.StartDate);
 		}
 	}
 });

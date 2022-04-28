@@ -1,7 +1,11 @@
-import {JetView} from "webix-jet";
-
+import { JetView } from "webix-jet";
+import activitiesData from "../../models/activitiesData";
 import contactsData from "../../models/contactsData";
 import statusesData from "../../models/statusesData";
+import ActivitiesDatatable from "./activitiesDatatable";
+import ActivitiesToolbar from "./activitiesToolbar";
+
+const uploadingData = new webix.DataCollection({});
 
 export default class ContactsTemplate extends JetView {
 	config() {
@@ -15,8 +19,32 @@ export default class ContactsTemplate extends JetView {
 							cols: [
 								this.createLabel("FirstName", "FirstName", "text-align-end"),
 								this.createLabel("LastName", "LastName"),
-								this.createButton("<span class='fas fa-trash'></span> Delete", "webix_primary", true),
-								this.createButton("<span class='fas fa-pen'></span> Edit", "webix_primary", true)
+								{},
+								{
+									view: "button",
+									value: "<span class='fas fa-trash'></span> Delete",
+									css: "webix_primary",
+									click: () => {
+										this.webix.confirm({
+											title: "Deleting an entry",
+											text: "Do you want to delete entry?"
+										}).then(() => {
+											const urlId = this.getParam("id");
+											contactsData.remove(urlId);
+											activitiesData.data.each((obj)=>{
+												if(obj.ContactID == urlId) {
+													activitiesData.remove(obj.id);
+												}
+											})
+											this.show(`contacts?id=${contactsData.getFirstId()}`)
+										});
+									}
+								},
+								{
+									view: "button",
+									value: "<span class='fas fa-pen on_edit'></span> Edit",
+									css: "webix_primary"
+								}
 							]
 						}
 					]
@@ -25,6 +53,7 @@ export default class ContactsTemplate extends JetView {
 					localId: "contactsTemplate",
 					template: (obj) => {
 						const status = statusesData.getItem(obj.StatusID);
+						const dataFormat = webix.Date.dateToStr("%Y-%m-%d");
 						const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 						return `
 						<div class="contactsInfo">
@@ -39,11 +68,95 @@ export default class ContactsTemplate extends JetView {
 								<p><span class="fas fa-building"></span> ${obj.Company || "-"}</p>
 							</div>
 							<div>
-								<p><span class="fas fa-calendar"></span> ${obj.Birthday || "-"}</p>
+								<p><span class="fas fa-calendar"></span> ${dataFormat(obj.dayOfBirth) || "-"}</p>
 								<p><span class="fas fa-compass"></span> ${obj.Address || "-"}</p>
 							</div>
 						</div>`;
 					}
+				},
+				{
+					view: "tabview",
+					multiview: true,
+					cells: [
+						{
+							header: "Activities",
+							body: {
+								rows: [
+									ActivitiesDatatable,
+									ActivitiesToolbar
+								]
+							}
+						},
+						{
+							header: 'Files',
+							body: {
+								rows: [
+									{
+										view: "datatable",
+										id: "filesTable",
+										localId: "filesTable",
+										type: "uploader",
+										autosend: false,
+										columns: [
+											{
+												id: "name",
+												header: "Name",
+												fillspace: true,
+												sort: "text"
+											},
+											{
+												id: "date",
+												header: "Change date",
+												format: webix.Date.dateToStr("%Y-%m-%d"),
+												sort: "date",
+												fillspace: true
+											},
+											{
+												id: "size",
+												header: "Size",
+												fillspace: true,
+												template: "#size# b",
+												sort: "int"
+											},
+											{
+												id: "delete",
+												header: "",
+												template: "<span class='fas fa-trash on_delete'></span>"
+											}
+										],
+										onClick: {
+											on_delete: (e, id) => {
+												this.webix.confirm({
+													title: "Deleting an entry",
+													text: "Do you want to delete entry?"
+												}).then(() => {
+													uploadingData.remove(id);
+												});
+											}
+										}
+									},
+									{
+										view: "uploader",
+										value: "Upload file",
+										link: "filesTable",
+										upload: uploadingData,
+										on: {
+											onAfterFileAdd(item) {
+												const urlId = this.$scope.getParentView().getParam("id");
+												uploadingData.add({
+													id: item.id,
+													date: new Date(),
+													name: item.name,
+													size: item.size,
+													contactId: urlId
+												})
+											}
+										}
+									}
+								]
+							}
+						}
+					]
 				}
 			]
 		};
@@ -57,6 +170,10 @@ export default class ContactsTemplate extends JetView {
 		return this.$$("contactsTemplate");
 	}
 
+	$getFilesTable() {
+		return this.$$("filesTable");
+	}
+
 	createLabel(label, title, style) {
 		return {
 			view: "label",
@@ -65,25 +182,24 @@ export default class ContactsTemplate extends JetView {
 			css: style
 		};
 	}
-
-	createButton(value, style, active) {
-		return {
-			view: "button",
-			value,
-			css: style,
-			disabled: active
-		};
-	}
-
 	urlChange() {
 		const contactId = this.getParam("id");
 		this.webix.promise.all([
 			contactsData.waitData,
-			statusesData.waitData
+			statusesData.waitData,
+			activitiesData.waitData
 		]).then(() => {
 			if (contactId) {
 				this.$getContactsHeader().parse(contactsData.getItem(contactId));
 				this.$getContactsTemplate().parse(contactsData.getItem(contactId));
+				uploadingData.data.each(obj => {
+					if (obj.contactId == contactId) {
+						this.$getFilesTable().parse(uploadingData.getItem(obj.id))
+					}
+					this.$getFilesTable().filter(obj => {
+						return obj.contactId == contactId
+					})
+				})
 			}
 		});
 	}
