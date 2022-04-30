@@ -13,7 +13,7 @@ export default class ActivitiesToolbar extends JetView {
 					value: "<span class='fas fa-plus'></span> Add Activity",
 					css: "webix_primary",
 					click: () => {
-                        const contactId = this.getParam("id");
+						const contactId = this.getParam("id");
 						this.popup.showWindow(contactId);
 					}
 				}

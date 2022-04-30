@@ -1,9 +1,10 @@
-import { JetView } from "webix-jet";
-import activitiesData from "../../models/activitiesData";
-import contactsData from "../../models/contactsData";
-import statusesData from "../../models/statusesData";
-import ActivitiesDatatable from "./activitiesDatatable";
-import ActivitiesToolbar from "./activitiesToolbar";
+import {JetView} from "webix-jet";
+
+import activitiesData from "../models/activitiesData";
+import contactsData from "../models/contactsData";
+import statusesData from "../models/statusesData";
+import ActivitiesDatatable from "./details/activitiesDatatable";
+import ActivitiesToolbar from "./details/activitiesToolbar";
 
 const uploadingData = new webix.DataCollection({});
 
@@ -31,19 +32,23 @@ export default class ContactsTemplate extends JetView {
 										}).then(() => {
 											const urlId = this.getParam("id");
 											contactsData.remove(urlId);
-											activitiesData.data.each((obj)=>{
-												if(obj.ContactID == urlId) {
+											activitiesData.data.each((obj) => {
+												if (obj.ContactID === urlId) {
 													activitiesData.remove(obj.id);
 												}
-											})
-											this.show(`contacts?id=${contactsData.getFirstId()}`)
+											});
+											this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
 										});
 									}
 								},
 								{
 									view: "button",
 									value: "<span class='fas fa-pen on_edit'></span> Edit",
-									css: "webix_primary"
+									css: "webix_primary",
+									click: () => {
+										const contactId = this.getParam("id");
+										this.show(`contactsAddAndEdit?id=${contactId}`);
+									}
 								}
 							]
 						}
@@ -88,7 +93,7 @@ export default class ContactsTemplate extends JetView {
 							}
 						},
 						{
-							header: 'Files',
+							header: "Files",
 							body: {
 								rows: [
 									{
@@ -141,15 +146,16 @@ export default class ContactsTemplate extends JetView {
 										link: "filesTable",
 										upload: uploadingData,
 										on: {
-											onAfterFileAdd(item) {
-												const urlId = this.$scope.getParentView().getParam("id");
+											onAfterFileAdd: (item) => {
+												const urlId = this.getParam("id");
 												uploadingData.add({
 													id: item.id,
 													date: new Date(),
 													name: item.name,
 													size: item.size,
 													contactId: urlId
-												})
+												});
+												this.$getFilesTable().filter(obj => obj.contactId === urlId);
 											}
 										}
 									}
@@ -182,6 +188,7 @@ export default class ContactsTemplate extends JetView {
 			css: style
 		};
 	}
+
 	urlChange() {
 		const contactId = this.getParam("id");
 		this.webix.promise.all([
@@ -189,17 +196,12 @@ export default class ContactsTemplate extends JetView {
 			statusesData.waitData,
 			activitiesData.waitData
 		]).then(() => {
+			const uploadTable = this.$getFilesTable();
 			if (contactId) {
 				this.$getContactsHeader().parse(contactsData.getItem(contactId));
 				this.$getContactsTemplate().parse(contactsData.getItem(contactId));
-				uploadingData.data.each(obj => {
-					if (obj.contactId == contactId) {
-						this.$getFilesTable().parse(uploadingData.getItem(obj.id))
-					}
-					this.$getFilesTable().filter(obj => {
-						return obj.contactId == contactId
-					})
-				})
+				uploadTable.sync(uploadingData);
+				uploadTable.filter(obj => obj.contactId === contactId);
 			}
 		});
 	}
