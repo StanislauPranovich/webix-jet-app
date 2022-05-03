@@ -1,8 +1,7 @@
-import {JetView} from "webix-jet";
+import { JetView } from "webix-jet";
 
 import contactsData from "../models/contactsData";
 import statusesData from "../models/statusesData";
-
 
 export default class ContactsAddAndEdit extends JetView {
 	config() {
@@ -153,16 +152,15 @@ export default class ContactsAddAndEdit extends JetView {
 							view: "toolbar",
 							borderless: true,
 							cols: [
-								{gravity: 3},
+								{ gravity: 3 },
 								{
 									view: "button",
 									value: "Cancel",
 									css: "webix_primary",
 									click: () => {
-										const contactId = this.getParam("id");
 										this.clearForm();
-										if (contactId) {
-											this.show(`contactsTemplate?id=${contactId}`);
+										if (this.contactId) {
+											this.show(`contactsTemplate?id=${this.contactId}`);
 										}
 										else {
 											this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
@@ -176,17 +174,21 @@ export default class ContactsAddAndEdit extends JetView {
 									click: () => {
 										const form = this.$getContactsForm();
 										const values = this.getFormData();
-										const contactId = this.getParam("id");
 										if (form.validate()) {
-											if (contactId) {
+											if (this.contactId) {
 												this.getFormData();
-												contactsData.updateItem(contactId, this.getFormData());
+												contactsData.updateItem(this.contactId, this.getFormData());
+												this.show(`contactsTemplate?id=${this.contactId}`);
 											}
 											else {
-												contactsData.add(values);
+												contactsData.waitSave(() => {
+													contactsData.add(values);
+												}).then(() => {
+													const lastElementId = contactsData.getLastId();
+													this.show(`contactsTemplate?id=${lastElementId}`);
+												})
 											}
 											this.clearForm();
-											this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
 										}
 									}
 								}
@@ -216,16 +218,13 @@ export default class ContactsAddAndEdit extends JetView {
 	}
 
 	init() {
-		const contactId = this.getParam("id");
+		this.contactId = this.getParam("id");
 		this.notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 		const form = this.$getContactsForm();
 		contactsData.waitData.then(() => {
-			if (contactId) {
-				form.setValues(contactsData.getItem(contactId));
+			if (this.contactId) {
+				form.setValues(contactsData.getItem(this.contactId));
 			}
-		});
-		this.on(contactsData.data, "onStoreUpdated", () => {
-			this.show(`contactsTemplate?id=${contactsData.getItem(contactsData.getFirstId())}`);
 		});
 		this.$$("upload").setValues({
 			photo: this.notFound

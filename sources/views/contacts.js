@@ -1,4 +1,4 @@
-import {JetView} from "webix-jet";
+import { JetView } from "webix-jet";
 
 import contactsData from "../models/contactsData";
 
@@ -32,7 +32,7 @@ export default class ContactsView extends JetView {
 						}
 					]
 				},
-				{$subview: true}
+				{ $subview: true }
 			]
 
 		};
@@ -48,11 +48,19 @@ export default class ContactsView extends JetView {
 		this.on(listOfContacts, "onAfterSelect", (id) => {
 			this.show(`contactsTemplate?id=${id}`);
 		});
-		this.on(contactsData.data, "onStoreUpdated", () => {
+		this.on(contactsData.data, "onAfterDelete", () => {
 			listOfContacts.select(listOfContacts.getFirstId());
 		});
 		contactsData.waitData.then(() => {
 			listOfContacts.select(listOfContacts.getFirstId());
 		});
+	}
+	urlChange(view, url) {
+		const listOfContacts = this.$getListOfContacts();
+		if (url[1]) {
+			if (url[1].params.id === `${contactsData.getLastId()}` || url[1].params.id === `${contactsData.getFirstId()}`) {
+				listOfContacts.select(url[1].params.id);
+			}
+		}
 	}
 }

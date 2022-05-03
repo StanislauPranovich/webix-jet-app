@@ -30,13 +30,21 @@ export default class ContactsTemplate extends JetView {
 											title: "Deleting an entry",
 											text: "Do you want to delete entry?"
 										}).then(() => {
-											const urlId = this.getParam("id");
-											contactsData.remove(urlId);
+											const activitiesToDel = [];
+											const filesToDel = [];
 											activitiesData.data.each((obj) => {
-												if (obj.ContactID === urlId) {
-													activitiesData.remove(obj.id);
+												if (`${obj.ContactID}` === this.contactId) {
+													activitiesToDel.push(obj.id)
 												}
 											});
+											uploadingData.data.each((obj) => {
+												if (`${obj.ContactID}` === this.contactId) {
+													filesToDel.push(obj.id)
+												}
+											});
+											activitiesData.remove(activitiesToDel);
+											uploadingData.remove(filesToDel);
+											contactsData.remove(this.contactId);
 											this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
 										});
 									}
@@ -46,8 +54,7 @@ export default class ContactsTemplate extends JetView {
 									value: "<span class='fas fa-pen on_edit'></span> Edit",
 									css: "webix_primary",
 									click: () => {
-										const contactId = this.getParam("id");
-										this.show(`contactsAddAndEdit?id=${contactId}`);
+										this.show(`contactsAddAndEdit?id=${this.contactId}`);
 									}
 								}
 							]
@@ -147,15 +154,14 @@ export default class ContactsTemplate extends JetView {
 										upload: uploadingData,
 										on: {
 											onAfterFileAdd: (item) => {
-												const urlId = this.getParam("id");
 												uploadingData.add({
 													id: item.id,
 													date: new Date(),
 													name: item.name,
 													size: item.size,
-													contactId: urlId
+													contactId: this.contactId
 												});
-												this.$getFilesTable().filter(obj => obj.contactId === urlId);
+												this.$getFilesTable().filter(obj => obj.contactId === this.contactId);
 											}
 										}
 									}
@@ -190,18 +196,18 @@ export default class ContactsTemplate extends JetView {
 	}
 
 	urlChange() {
-		const contactId = this.getParam("id");
+		this.contactId = this.getParam("id");
 		this.webix.promise.all([
 			contactsData.waitData,
 			statusesData.waitData,
 			activitiesData.waitData
 		]).then(() => {
 			const uploadTable = this.$getFilesTable();
-			if (contactId) {
-				this.$getContactsHeader().parse(contactsData.getItem(contactId));
-				this.$getContactsTemplate().parse(contactsData.getItem(contactId));
+			if (this.contactId) {
+				this.$getContactsHeader().parse(contactsData.getItem(this.contactId));
+				this.$getContactsTemplate().parse(contactsData.getItem(this.contactId));
 				uploadTable.sync(uploadingData);
-				uploadTable.filter(obj => obj.contactId === contactId);
+				uploadTable.filter(obj => obj.contactId === this.contactId);
 			}
 		});
 	}
