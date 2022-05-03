@@ -34,12 +34,12 @@ export default class ContactsTemplate extends JetView {
 											const filesToDel = [];
 											activitiesData.data.each((obj) => {
 												if (`${obj.ContactID}` === this.contactId) {
-													activitiesToDel.push(obj.id)
+													activitiesToDel.push(obj.id);
 												}
 											});
 											uploadingData.data.each((obj) => {
 												if (`${obj.ContactID}` === this.contactId) {
-													filesToDel.push(obj.id)
+													filesToDel.push(obj.id);
 												}
 											});
 											activitiesData.remove(activitiesToDel);

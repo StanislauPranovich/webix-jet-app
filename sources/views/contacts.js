@@ -1,4 +1,4 @@
-import { JetView } from "webix-jet";
+import {JetView} from "webix-jet";
 
 import contactsData from "../models/contactsData";
 
@@ -32,7 +32,7 @@ export default class ContactsView extends JetView {
 						}
 					]
 				},
-				{ $subview: true }
+				{$subview: true}
 			]
 
 		};
@@ -55,6 +55,7 @@ export default class ContactsView extends JetView {
 			listOfContacts.select(listOfContacts.getFirstId());
 		});
 	}
+
 	urlChange(view, url) {
 		const listOfContacts = this.$getListOfContacts();
 		if (url[1]) {

@@ -1,4 +1,4 @@
-import { JetView } from "webix-jet";
+import {JetView} from "webix-jet";
 
 import contactsData from "../models/contactsData";
 import statusesData from "../models/statusesData";
@@ -152,7 +152,7 @@ export default class ContactsAddAndEdit extends JetView {
 							view: "toolbar",
 							borderless: true,
 							cols: [
-								{ gravity: 3 },
+								{gravity: 3},
 								{
 									view: "button",
 									value: "Cancel",
@@ -186,7 +186,7 @@ export default class ContactsAddAndEdit extends JetView {
 												}).then(() => {
 													const lastElementId = contactsData.getLastId();
 													this.show(`contactsTemplate?id=${lastElementId}`);
-												})
+												});
 											}
 											this.clearForm();
 										}
