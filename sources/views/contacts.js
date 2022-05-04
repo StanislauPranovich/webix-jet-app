@@ -13,20 +13,14 @@ export default class ContactsView extends JetView {
 							view: "list",
 							localId: "listOfContacts",
 							template: (obj) => {
-								let firstName;
-								let lastName;
 								const decreaseLength = (key) => {
-									if (([key]).length > 9) {
-										firstName = `${([key]).slice(0, 7)}...`;
+									if (([key]).length > 10) {
+										return `${([key]).slice(0, 7)}...`;
 									}
-									else {
-										firstName = [key];
-									}
+									return [key];
 								};
-								decreaseLength(obj.FirstName);
-								decreaseLength(obj.LastName);
 								return `
-								<span class='fas fa-user'></span>${firstName} ${lastName} <div class='company-name'>${obj.Company}</div>
+								<span class='fas fa-user'></span>${decreaseLength(obj.FirstName)} ${decreaseLength(obj.LastName)} <div class='company-name'>${obj.Company}</div>
 								`;
 							},
 							select: true,
