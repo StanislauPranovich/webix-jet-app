@@ -88,4 +88,12 @@
 }
 .contactsInfoPhoto {
     height: 150px;
+    width: 200px;
+}
+.emptyTemplate .webix_template{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-size: 25px;
 }

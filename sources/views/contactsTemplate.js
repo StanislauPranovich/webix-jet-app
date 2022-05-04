@@ -10,6 +10,78 @@ const uploadingData = new webix.DataCollection({});
 
 export default class ContactsTemplate extends JetView {
 	config() {
+		const uploader = {
+			header: "Files",
+			body: {
+				rows: [
+					{
+						view: "datatable",
+						id: "filesTable",
+						localId: "filesTable",
+						type: "uploader",
+						autosend: false,
+						columns: [
+							{
+								id: "name",
+								header: "Name",
+								fillspace: true,
+								sort: "text"
+							},
+							{
+								id: "date",
+								header: "Change date",
+								format: webix.Date.dateToStr("%Y-%m-%d"),
+								sort: "date",
+								fillspace: true
+							},
+							{
+								id: "sizetext",
+								header: "Size",
+								fillspace: true,
+								template: "#sizetext#",
+								sort: this.sortFilesSize
+							},
+							{
+								id: "delete",
+								header: "",
+								template: "<span class='fas fa-trash on_delete'></span>"
+							}
+						],
+						onClick: {
+							on_delete: (e, id) => {
+								this.webix.confirm({
+									title: "Deleting an entry",
+									text: "Do you want to delete entry?"
+								}).then(() => {
+									uploadingData.remove(id);
+								});
+							}
+						}
+					},
+					{
+						view: "uploader",
+						value: "Upload file",
+						link: "filesTable",
+						upload: uploadingData,
+						autosend: false,
+						on: {
+							onAfterFileAdd: (item) => {
+								uploadingData.add({
+									id: item.id,
+									date: new Date(),
+									name: item.name,
+									size: item.size,
+									sizetext: item.sizetext,
+									contactId: this.contactId
+								});
+								this.$getFilesTable().filter(obj => obj.contactId === this.contactId);
+							}
+						}
+					}
+				]
+			}
+		};
+
 		return {
 			rows: [
 				{
@@ -45,7 +117,13 @@ export default class ContactsTemplate extends JetView {
 											activitiesData.remove(activitiesToDel);
 											uploadingData.remove(filesToDel);
 											contactsData.remove(this.contactId);
-											this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
+											if (contactsData.count() === 0) {
+												this.getRoot().hide();
+												this.show("emptyView");
+											}
+											else {
+												this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
+											}
 										});
 									}
 								},
@@ -99,75 +177,7 @@ export default class ContactsTemplate extends JetView {
 								]
 							}
 						},
-						{
-							header: "Files",
-							body: {
-								rows: [
-									{
-										view: "datatable",
-										id: "filesTable",
-										localId: "filesTable",
-										type: "uploader",
-										autosend: false,
-										columns: [
-											{
-												id: "name",
-												header: "Name",
-												fillspace: true,
-												sort: "text"
-											},
-											{
-												id: "date",
-												header: "Change date",
-												format: webix.Date.dateToStr("%Y-%m-%d"),
-												sort: "date",
-												fillspace: true
-											},
-											{
-												id: "size",
-												header: "Size",
-												fillspace: true,
-												template: "#size# b",
-												sort: "int"
-											},
-											{
-												id: "delete",
-												header: "",
-												template: "<span class='fas fa-trash on_delete'></span>"
-											}
-										],
-										onClick: {
-											on_delete: (e, id) => {
-												this.webix.confirm({
-													title: "Deleting an entry",
-													text: "Do you want to delete entry?"
-												}).then(() => {
-													uploadingData.remove(id);
-												});
-											}
-										}
-									},
-									{
-										view: "uploader",
-										value: "Upload file",
-										link: "filesTable",
-										upload: uploadingData,
-										on: {
-											onAfterFileAdd: (item) => {
-												uploadingData.add({
-													id: item.id,
-													date: new Date(),
-													name: item.name,
-													size: item.size,
-													contactId: this.contactId
-												});
-												this.$getFilesTable().filter(obj => obj.contactId === this.contactId);
-											}
-										}
-									}
-								]
-							}
-						}
+						uploader
 					]
 				}
 			]
@@ -209,6 +219,21 @@ export default class ContactsTemplate extends JetView {
 				uploadTable.sync(uploadingData);
 				uploadTable.filter(obj => obj.contactId === this.contactId);
 			}
+			else {
+				this.show("contacts");
+			}
 		});
+	}
+
+	sortFilesSize(a, b) {
+		a = a.size;
+		b = b.size;
+		if (a > b) {
+			return 1;
+		}
+		else if (a < b) {
+			return -1;
+		}
+		return 0;
 	}
 }

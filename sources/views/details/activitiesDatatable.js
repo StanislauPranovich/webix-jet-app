@@ -28,6 +28,7 @@ export default class ActivitiesDatatable extends JetView {
 				},
 				{
 					id: "TypeID",
+					localId: "type",
 					header: ["Activity type", {content: "selectFilter"}],
 					sort: "text",
 					collection: activitiesTypeData
@@ -113,5 +114,9 @@ export default class ActivitiesDatatable extends JetView {
 				table.filter(obj => `${obj.ContactID}` === contactId);
 			});
 		}
+		this.on(activitiesData.data, "onStoreUpdated", () => {
+			table.filterByAll();
+		});
+		table.filterByAll();
 	}
 }
