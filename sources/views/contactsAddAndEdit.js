@@ -6,6 +6,7 @@ import statusesData from "../models/statusesData";
 
 export default class ContactsAddAndEdit extends JetView {
 	config() {
+		const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 		const formToolbar = {
 			view: "toolbar",
 			borderless: true,
@@ -16,8 +17,10 @@ export default class ContactsAddAndEdit extends JetView {
 					value: "Cancel",
 					css: "webix_primary",
 					click: () => {
-						const id = this.contactId || contactsData.getFirstId();
+						const firstId = contactsData.getFirstId();
+						const id = this.contactId || firstId;
 						this.show(`contactsTemplate?id=${id}`);
+						this.app.callEvent("onAfterCancelAdd", [id]);
 					}
 				},
 				{
@@ -40,7 +43,7 @@ export default class ContactsAddAndEdit extends JetView {
 									contactsData.add(values);
 								}).then((obj) => {
 									this.show(`contactsTemplate?id=${obj.id}`);
-									this.app.callEvent("onAfterContactAdd", [contactsData.getLastId()]);
+									this.app.callEvent("onAfterContactAdd", [obj.id]);
 								});
 							}
 						}
@@ -54,7 +57,7 @@ export default class ContactsAddAndEdit extends JetView {
 				{
 					view: "template",
 					localId: "upload",
-					template: obj => `<img class='contacts_info_photo' src="${obj.Photo || this.notFound}" />`,
+					template: obj => `<img class='contacts_info_photo' src="${obj.Photo || notFound}" />`,
 					borderless: true
 				},
 				{
@@ -88,7 +91,7 @@ export default class ContactsAddAndEdit extends JetView {
 							css: "webix_primary",
 							click: () => {
 								this.$$("upload").setValues({
-									Photo: this.notFound
+									Photo: ""
 								});
 							}
 						}
@@ -103,13 +106,15 @@ export default class ContactsAddAndEdit extends JetView {
 					view: "text",
 					label: "Firstname",
 					name: "FirstName",
-					required: true
+					required: true,
+					labelWidth: 85
 				},
 				{
 					view: "text",
 					label: "Lastname",
 					name: "LastName",
-					required: true
+					required: true,
+					labelWidth: 85
 				},
 				{
 					view: "datepicker",
@@ -226,16 +231,13 @@ export default class ContactsAddAndEdit extends JetView {
 
 	init() {
 		this.contactId = this.getParam("id");
-		this.notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 		const form = this.$getContactsForm();
 		contactsData.waitData.then(() => {
 			if (this.contactId) {
-				form.setValues(contactsData.getItem(this.contactId));
-				this.$$("upload").parse(contactsData.getItem(this.contactId));
+				const contactsItem = contactsData.getItem(this.contactId);
+				form.setValues(contactsItem);
+				this.$$("upload").parse(contactsItem);
 			}
-		});
-		this.$$("upload").setValues({
-			photo: this.notFound
 		});
 	}
 }

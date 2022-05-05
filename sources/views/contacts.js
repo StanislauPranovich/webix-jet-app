@@ -5,6 +5,7 @@ import contactsData from "../models/contactsData";
 
 export default class ContactsView extends JetView {
 	config() {
+		const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 		return {
 			cols: [
 				{
@@ -13,7 +14,7 @@ export default class ContactsView extends JetView {
 							view: "list",
 							localId: "listOfContacts",
 							template: obj => `
-								<div class="ellipsis"><span class='fas fa-user'></span>${obj.FirstName} ${obj.LastName} <div class='company_name'>${obj.Company}</div></div>
+								<div class="ellipsis"><img class="list_photo" src="${obj.Photo || notFound}" width="20px" height="20px"></img>${obj.FirstName} ${obj.LastName} <div class='company_name'>${obj.Company}</div></div>
 								`,
 							select: true,
 							type: {
@@ -59,6 +60,9 @@ export default class ContactsView extends JetView {
 			}
 		});
 		this.on(this.app, "onAfterContactAdd", (id) => {
+			listOfContacts.select(id);
+		});
+		this.on(this.app, "onAfterCancelAdd", (id) => {
 			listOfContacts.select(id);
 		});
 	}

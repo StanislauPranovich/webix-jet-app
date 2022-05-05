@@ -61,7 +61,7 @@
     vertical-align: sub;
 }
 .company_name {
-    margin: -15px 0px 0px 22px;
+    margin: -15px 0px 0px 25px;
     font-size: 12px;
     color: gray;
 }
@@ -101,4 +101,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.list_photo{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
 }

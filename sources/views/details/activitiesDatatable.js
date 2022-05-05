@@ -66,7 +66,8 @@ export default class ActivitiesDatatable extends JetView {
 			],
 			onClick: {
 				on_edit: (e, id) => {
-					this.popup.showWindow(id);
+					const contactId = this.getParam("id");
+					this.popup.showWindow(id, contactId);
 					return false;
 				},
 				on_delete: (e, id) => {
@@ -96,6 +97,7 @@ export default class ActivitiesDatatable extends JetView {
 	init() {
 		const table = this.$getActivitiesTable();
 		const contactId = this.getParam("id");
+		table.sync(activitiesData);
 		this.on(activitiesData.data, "onStoreUpdated", () => {
 			table.filterByAll();
 		});
@@ -103,17 +105,14 @@ export default class ActivitiesDatatable extends JetView {
 		if (contactId) {
 			table.hideColumn("ContactID");
 		}
-		table.sync(activitiesData);
 	}
 
 	urlChange() {
 		const contactId = this.getParam("id");
 		const table = this.$getActivitiesTable();
 		if (contactId) {
-			this.on(activitiesData.data, "onStoreUpdated", () => {
-				table.filter(obj => `${obj.ContactID}` === contactId);
-			});
+			table.filter(obj => `${obj.ContactID}` === contactId);
+			table.filterByAll();
 		}
-		table.filterByAll();
 	}
 }

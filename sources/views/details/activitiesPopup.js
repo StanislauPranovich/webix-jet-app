@@ -15,6 +15,7 @@ export default class ActivitiesPopup extends JetView {
 		return {
 			view: "popup",
 			position: "center",
+			modal: true,
 			body: {
 				rows: [
 					{
