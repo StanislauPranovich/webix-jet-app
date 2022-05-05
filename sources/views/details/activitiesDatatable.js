@@ -80,8 +80,8 @@ export default class ActivitiesDatatable extends JetView {
 			},
 			on: {
 				onAfterFilter() {
-					if (this.$scope.getUrlString().includes("contacts")) {
-						const urlId = this.$scope.getParam("id");
+					const urlId = this.$scope.getParam("id");
+					if (urlId) {
 						this.filter(item => `${item.ContactID}` === urlId, "", true);
 					}
 				}
@@ -95,11 +95,12 @@ export default class ActivitiesDatatable extends JetView {
 
 	init() {
 		const table = this.$getActivitiesTable();
+		const contactId = this.getParam("id");
 		this.on(activitiesData.data, "onStoreUpdated", () => {
 			table.filterByAll();
 		});
 		this.popup = this.ui(new ActivitiesPopup(this.app, "Edit", "Save"));
-		if (this.getUrlString().includes("contacts")) {
+		if (contactId) {
 			table.hideColumn("ContactID");
 		}
 		table.sync(activitiesData);
@@ -108,15 +109,11 @@ export default class ActivitiesDatatable extends JetView {
 	urlChange() {
 		const contactId = this.getParam("id");
 		const table = this.$getActivitiesTable();
-		if (this.getUrlString().includes("contacts")) {
-			table.filter(obj => `${obj.ContactID}` === contactId);
+		if (contactId) {
 			this.on(activitiesData.data, "onStoreUpdated", () => {
 				table.filter(obj => `${obj.ContactID}` === contactId);
 			});
 		}
-		this.on(activitiesData.data, "onStoreUpdated", () => {
-			table.filterByAll();
-		});
 		table.filterByAll();
 	}
 }

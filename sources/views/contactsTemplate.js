@@ -18,7 +18,6 @@ export default class ContactsTemplate extends JetView {
 						view: "datatable",
 						id: "filesTable",
 						localId: "filesTable",
-						type: "uploader",
 						autosend: false,
 						columns: [
 							{
@@ -74,7 +73,6 @@ export default class ContactsTemplate extends JetView {
 									sizetext: item.sizetext,
 									contactId: this.contactId
 								});
-								this.$getFilesTable().filter(obj => obj.contactId === this.contactId);
 							}
 						}
 					}
@@ -90,7 +88,7 @@ export default class ContactsTemplate extends JetView {
 					rows: [
 						{
 							cols: [
-								this.createLabel("FirstName", "FirstName", "text-align-end"),
+								this.createLabel("FirstName", "FirstName", "text_align_end"),
 								this.createLabel("LastName", "LastName"),
 								{},
 								{
@@ -110,7 +108,7 @@ export default class ContactsTemplate extends JetView {
 												}
 											});
 											uploadingData.data.each((obj) => {
-												if (`${obj.ContactID}` === this.contactId) {
+												if (`${obj.contactID}` === this.contactId) {
 													filesToDel.push(obj.id);
 												}
 											});
@@ -119,7 +117,6 @@ export default class ContactsTemplate extends JetView {
 											contactsData.remove(this.contactId);
 											if (contactsData.count() === 0) {
 												this.getRoot().hide();
-												this.show("emptyView");
 											}
 											else {
 												this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
@@ -146,9 +143,9 @@ export default class ContactsTemplate extends JetView {
 						const dataFormat = webix.Date.dateToStr("%Y-%m-%d");
 						const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 						return `
-						<div class="contactsInfo">
-							<div class="contactsInfoFirstColumn">
-								<img class="contactsInfoPhoto" src=${obj.Photo || notFound} />
+						<div class="contacts_info">
+							<div class="contacts_info_first_column">
+								<img class="contacts_info_photo" src=${obj.Photo || notFound} />
 								<p>${status ? status.value : "No Status"}</p>
 							</div>
 							<div>
@@ -216,24 +213,14 @@ export default class ContactsTemplate extends JetView {
 			if (this.contactId) {
 				this.$getContactsHeader().parse(contactsData.getItem(this.contactId));
 				this.$getContactsTemplate().parse(contactsData.getItem(this.contactId));
-				uploadTable.sync(uploadingData);
-				uploadTable.filter(obj => obj.contactId === this.contactId);
-			}
-			else {
-				this.show("contacts");
+				uploadTable.sync(uploadingData, () => {
+					uploadTable.filter(obj => obj.contactId === this.contactId);
+				});
 			}
 		});
 	}
 
 	sortFilesSize(a, b) {
-		a = a.size;
-		b = b.size;
-		if (a > b) {
-			return 1;
-		}
-		else if (a < b) {
-			return -1;
-		}
-		return 0;
+		return a.size - b.size;
 	}
 }

@@ -1,4 +1,4 @@
 export default {
 	template: "Add a contact",
-	css: "emptyTemplate"
+	css: "empty_template"
 };

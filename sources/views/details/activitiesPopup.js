@@ -21,7 +21,7 @@ export default class ActivitiesPopup extends JetView {
 						view: "template",
 						template: `${this.name} activity`,
 						type: "header",
-						css: "text-align-center"
+						css: "text_align_center"
 					},
 					{
 						view: "form",
@@ -98,11 +98,11 @@ export default class ActivitiesPopup extends JetView {
 		return this.$$("formInPopup");
 	}
 
-	showWindow(id) {
-		this.rowID = id;
+	showWindow(rowId, contactId) {
+		this.rowID = rowId;
 		const ContactID = this.$$("ContactID");
-		if (this.getUrlString().includes("contacts")) {
-			ContactID.setValue(id);
+		if (contactId) {
+			ContactID.setValue(contactId);
 			ContactID.disable();
 		}
 		this.getRoot().show();

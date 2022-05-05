@@ -12,25 +12,9 @@ export default class ContactsView extends JetView {
 						{
 							view: "list",
 							localId: "listOfContacts",
-							template: (obj) => {
-								let firstName;
-								let lastName;
-								if ((obj.FirstName).length > 9) {
-									firstName = `${(obj.FirstName).slice(0, 7)}...`;
-								}
-								else {
-									firstName = obj.FirstName;
-								}
-								if ((obj.LastName).length > 9) {
-									lastName = `${(obj.LastName).slice(0, 7)}...`;
-								}
-								else {
-									lastName = obj.LastName;
-								}
-								return `
-								<span class='fas fa-user'></span>${firstName} ${lastName} <div class='company-name'>${obj.Company}</div>
-								`;
-							},
+							template: obj => `
+								<div class="ellipsis"><span class='fas fa-user'></span>${obj.FirstName} ${obj.LastName} <div class='company_name'>${obj.Company}</div></div>
+								`,
 							select: true,
 							type: {
 								height: 43,
@@ -43,16 +27,13 @@ export default class ContactsView extends JetView {
 							value: "<span class='fas fa-plus'></span> Add Contact",
 							css: "webix_primary",
 							click: () => {
-								if (!this.getUrlString().includes("contactsAddAndEdit")) {
-									this.show("contactsAddAndEdit");
-								}
+								this.show("contactsAddAndEdit");
 							}
 						}
 					]
 				},
 				{$subview: true}
 			]
-
 		};
 	}
 
@@ -72,17 +53,13 @@ export default class ContactsView extends JetView {
 		contactsData.waitData.then(() => {
 			listOfContacts.select(listOfContacts.getFirstId());
 		});
-		if (contactsData.count() === 0) {
-			this.show("emptyView");
-		}
-	}
-
-	urlChange(view, url) {
-		const listOfContacts = this.$getListOfContacts();
-		if (url[1]) {
-			if (url[1].params.id === `${contactsData.getLastId()}` || url[1].params.id === `${contactsData.getFirstId()}`) {
-				listOfContacts.select(url[1].params.id);
+		this.on(contactsData.data, "onStoreUpdated", () => {
+			if (contactsData.count() === 0) {
+				this.show("emptyView");
 			}
-		}
+		});
+		this.on(this.app, "onAfterContactAdd", (id) => {
+			listOfContacts.select(id);
+		});
 	}
 }

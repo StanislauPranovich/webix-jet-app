@@ -16,18 +16,8 @@ export default class ContactsAddAndEdit extends JetView {
 					value: "Cancel",
 					css: "webix_primary",
 					click: () => {
-						this.clearForm();
-						const form = this.$getContactsForm();
-						if (this.contactId) {
-							this.show(`contactsTemplate?id=${this.contactId}`);
-						}
-						else if (contactsData.count() === 0) {
-							form.hide();
-							this.show("emptyView");
-						}
-						else {
-							this.show(`contactsTemplate?id=${contactsData.getFirstId()}`);
-						}
+						const id = this.contactId || contactsData.getFirstId();
+						this.show(`contactsTemplate?id=${id}`);
 					}
 				},
 				{
@@ -36,24 +26,23 @@ export default class ContactsAddAndEdit extends JetView {
 					css: "webix_primary",
 					click: () => {
 						const form = this.$getContactsForm();
-						const values = this.getFormData();
 						if (form.validate()) {
+							const values = this.getFormData();
 							if (this.contactId) {
-								values.Photo = this.$$("upload").getValues().photo;
+								values.Photo = this.$$("upload").getValues().Photo;
 								values.value = `${values.FirstName} ${values.LastName}`;
 								contactsData.updateItem(this.contactId, values);
 								this.show(`contactsTemplate?id=${this.contactId}`);
 							}
 							else {
 								contactsData.waitSave(() => {
-									values.Photo = this.$$("upload").getValues().photo;
+									values.Photo = this.$$("upload").getValues().Photo;
 									contactsData.add(values);
-								}).then(() => {
-									const lastElementId = contactsData.getLastId();
-									this.show(`contactsTemplate?id=${lastElementId}`);
+								}).then((obj) => {
+									this.show(`contactsTemplate?id=${obj.id}`);
+									this.app.callEvent("onAfterContactAdd", [contactsData.getLastId()]);
 								});
 							}
-							this.clearForm();
 						}
 					}
 				}
@@ -65,7 +54,7 @@ export default class ContactsAddAndEdit extends JetView {
 				{
 					view: "template",
 					localId: "upload",
-					template: "<img class='contactsInfoPhoto' src=#photo# />",
+					template: obj => `<img class='contacts_info_photo' src="${obj.Photo || this.notFound}" />`,
 					borderless: true
 				},
 				{
@@ -84,7 +73,7 @@ export default class ContactsAddAndEdit extends JetView {
 									const file = item.file;
 									reader.onloadend = () => {
 										this.$$("upload").setValues({
-											photo: reader.result
+											Photo: reader.result
 										});
 									};
 									if (file) {
@@ -99,7 +88,7 @@ export default class ContactsAddAndEdit extends JetView {
 							css: "webix_primary",
 							click: () => {
 								this.$$("upload").setValues({
-									photo: ""
+									Photo: this.notFound
 								});
 							}
 						}
@@ -228,11 +217,11 @@ export default class ContactsAddAndEdit extends JetView {
 	}
 
 	getFormData() {
-		const dataObj = this.$getContactsForm().getValues();
+		const formValues = this.$getContactsForm().getValues();
 		const formatDate = webix.Date.dateToStr("%Y-%m-%d %h:%i");
-		dataObj.StartDate = formatDate(dataObj.dayOfStart);
-		dataObj.Birthday = formatDate(dataObj.dayOfBirth);
-		return dataObj;
+		formValues.StartDate = formatDate(formValues.dayOfStart);
+		formValues.Birthday = formatDate(formValues.dayOfBirth);
+		return formValues;
 	}
 
 	init() {
@@ -242,17 +231,11 @@ export default class ContactsAddAndEdit extends JetView {
 		contactsData.waitData.then(() => {
 			if (this.contactId) {
 				form.setValues(contactsData.getItem(this.contactId));
+				this.$$("upload").parse(contactsData.getItem(this.contactId));
 			}
 		});
-		if (this.contactId === undefined) {
-			this.$$("upload").setValues({
-				photo: this.notFound
-			});
-		}
-		else {
-			this.$$("upload").setValues({
-				photo: contactsData.getItem(this.contactId).Photo || this.notFound
-			});
-		}
+		this.$$("upload").setValues({
+			photo: this.notFound
+		});
 	}
 }
