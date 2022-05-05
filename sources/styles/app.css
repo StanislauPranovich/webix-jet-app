@@ -60,32 +60,51 @@
     margin-right: 10px;
     vertical-align: sub;
 }
-.company-name {
-    margin: -15px 0px 0px 22px;
+.company_name {
+    margin: -15px 0px 0px 25px;
     font-size: 12px;
     color: gray;
 }
-.text-align-center {
+.text_align_center {
     text-align: center;
 }
-.text-align-end {
+.text_align_end {
     text-align: end;
 }
-.contactsInfo {
+.contacts_info {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
 }
-.contactsInfo div {
+.contacts_info div {
     display: flex;
     flex-flow: column;
 }
-.contactsInfoFirstColumn {
+.contacts_info_first_column {
     display: flex;
     flex-flow: column;
     justify-content: space-between;
     text-align: center;
 }
-.contactsInfoPhoto {
+.contacts_info_photo {
     height: 150px;
+    width: 200px;
+}
+.empty_template .webix_template{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-size: 25px;
+}
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.list_photo{
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
 }

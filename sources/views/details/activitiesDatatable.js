@@ -5,7 +5,6 @@ import activitiesTypeData from "../../models/activitiesTypeData";
 import contactsData from "../../models/contactsData";
 import ActivitiesPopup from "./activitiesPopup";
 
-
 const compareDate = (value, filter) => webix.Date.equal(
 	webix.Date.dayStart(value),
 	webix.Date.dayStart(filter)
@@ -29,6 +28,7 @@ export default class ActivitiesDatatable extends JetView {
 				},
 				{
 					id: "TypeID",
+					localId: "type",
 					header: ["Activity type", {content: "selectFilter"}],
 					sort: "text",
 					collection: activitiesTypeData
@@ -66,7 +66,8 @@ export default class ActivitiesDatatable extends JetView {
 			],
 			onClick: {
 				on_edit: (e, id) => {
-					this.popup.showWindow(id);
+					const contactId = this.getParam("id");
+					this.popup.showWindow(id, contactId);
 					return false;
 				},
 				on_delete: (e, id) => {
@@ -76,6 +77,14 @@ export default class ActivitiesDatatable extends JetView {
 					}).then(() => {
 						activitiesData.remove(id);
 					});
+				}
+			},
+			on: {
+				onAfterFilter() {
+					const urlId = this.$scope.getParam("id");
+					if (urlId) {
+						this.filter(item => `${item.ContactID}` === urlId, "", true);
+					}
 				}
 			}
 		};
@@ -87,10 +96,23 @@ export default class ActivitiesDatatable extends JetView {
 
 	init() {
 		const table = this.$getActivitiesTable();
+		const contactId = this.getParam("id");
 		table.sync(activitiesData);
 		this.on(activitiesData.data, "onStoreUpdated", () => {
 			table.filterByAll();
 		});
 		this.popup = this.ui(new ActivitiesPopup(this.app, "Edit", "Save"));
+		if (contactId) {
+			table.hideColumn("ContactID");
+		}
+	}
+
+	urlChange() {
+		const contactId = this.getParam("id");
+		const table = this.$getActivitiesTable();
+		if (contactId) {
+			table.filter(obj => `${obj.ContactID}` === contactId);
+			table.filterByAll();
+		}
 	}
 }

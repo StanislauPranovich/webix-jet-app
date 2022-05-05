@@ -15,13 +15,14 @@ export default class ActivitiesPopup extends JetView {
 		return {
 			view: "popup",
 			position: "center",
+			modal: true,
 			body: {
 				rows: [
 					{
 						view: "template",
 						template: `${this.name} activity`,
 						type: "header",
-						css: "text-align-center"
+						css: "text_align_center"
 					},
 					{
 						view: "form",
@@ -43,6 +44,7 @@ export default class ActivitiesPopup extends JetView {
 								view: "combo",
 								label: "Contact",
 								name: "ContactID",
+								localId: "ContactID",
 								options: contactsData,
 								required: true
 							},
@@ -65,6 +67,7 @@ export default class ActivitiesPopup extends JetView {
 					{
 						view: "button",
 						value: `${this.buttonName}`,
+						css: "webix_primary",
 						click: () => {
 							const form = this.$getForm();
 							const values = this.getFormData();
@@ -82,6 +85,7 @@ export default class ActivitiesPopup extends JetView {
 					{
 						view: "button",
 						value: "Cancel",
+						css: "webix_primary",
 						click: () => {
 							this.clearForm();
 						}
@@ -95,8 +99,13 @@ export default class ActivitiesPopup extends JetView {
 		return this.$$("formInPopup");
 	}
 
-	showWindow(id) {
-		this.rowID = id;
+	showWindow(rowId, contactId) {
+		this.rowID = rowId;
+		const ContactID = this.$$("ContactID");
+		if (contactId) {
+			ContactID.setValue(contactId);
+			ContactID.disable();
+		}
 		this.getRoot().show();
 		if (this.name === "Edit") {
 			this.$getForm().setValues(activitiesData.getItem(this.rowID));
