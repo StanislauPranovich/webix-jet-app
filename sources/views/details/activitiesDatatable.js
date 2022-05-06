@@ -1,4 +1,4 @@
-import { JetView } from "webix-jet";
+import {JetView} from "webix-jet";
 
 import activitiesData from "../../models/activitiesData";
 import activitiesTypeData from "../../models/activitiesTypeData";
@@ -12,6 +12,7 @@ const compareDate = (value, filter) => webix.Date.equal(
 
 export default class ActivitiesDatatable extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		return {
 			rows: [
 				{
@@ -21,31 +22,31 @@ export default class ActivitiesDatatable extends JetView {
 					options: [
 						{
 							id: "all",
-							value: "All"
+							value: _("All")
 						},
 						{
 							id: "overdue",
-							value: "Overdue"
+							value: _("Overdue")
 						},
 						{
 							id: "completed",
-							value: "Completed"
+							value: _("Completed")
 						},
 						{
 							id: "today",
-							value: "Today"
+							value: _("Today")
 						},
 						{
 							id: "tomorrow",
-							value: "Tomorrow"
+							value: _("Tomorrow")
 						},
 						{
 							id: "thisWeek",
-							value: "This week"
+							value: _("This week")
 						},
 						{
 							id: "thisMonth",
-							value: "This month"
+							value: _("This month")
 						}
 					]
 				},
@@ -66,26 +67,27 @@ export default class ActivitiesDatatable extends JetView {
 						{
 							id: "TypeID",
 							localId: "type",
-							header: ["Activity type", { content: "selectFilter" }],
+							header: [_("Activity"), {content: "selectFilter"}],
 							sort: "text",
-							collection: activitiesTypeData
+							collection: activitiesTypeData,
+							fillspace: true
 						},
 						{
 							id: "dateObj",
-							header: ["Due date", { content: "datepickerFilter", compare: compareDate }],
+							header: [_("Due date"), {content: "datepickerFilter", compare: compareDate}],
 							sort: "date",
 							fillspace: true,
 							format: webix.Date.dateToStr("%Y-%m-%d %h:%i")
 						},
 						{
 							id: "Details",
-							header: ["Details", { content: "textFilter" }],
+							header: [_("Details"), {content: "textFilter"}],
 							sort: "string",
 							fillspace: true
 						},
 						{
 							id: "ContactID",
-							header: ["Contact", { content: "selectFilter" }],
+							header: [_("Contact"), {content: "selectFilter"}],
 							sort: "text",
 							collection: contactsData,
 							fillspace: true
@@ -109,8 +111,8 @@ export default class ActivitiesDatatable extends JetView {
 						},
 						on_delete: (e, id) => {
 							this.webix.confirm({
-								title: "Deleting an entry",
-								text: "Do you want to delete entry?"
+								title: _("Deleting an entry"),
+								text: _("Do you want to delete entry?")
 							}).then(() => {
 								activitiesData.remove(id);
 							});
@@ -126,7 +128,7 @@ export default class ActivitiesDatatable extends JetView {
 					}
 				}
 			]
-		}
+		};
 	}
 
 	$getActivitiesTable() {
@@ -149,17 +151,19 @@ export default class ActivitiesDatatable extends JetView {
 		if (contactId) {
 			table.hideColumn("ContactID");
 			tabs.hide();
-		} else {
+		}
+		else {
 			table.registerFilter(
 				tabs,
 				{
-					columnId: "State", compare(value, filter, item) {
+					columnId: "State",
+					compare(value, filter, item) {
 						const today = new Date();
 						const format = webix.Date.dateToStr("%Y-%m-%d");
+						const lastDayOfWeek = 7 - new Date(item.DueDate).getDay() +
+							new Date(item.DueDate).getDate();
+						const firstDayOfWeek = lastDayOfWeek - 6;
 						switch (filter) {
-							case "all":
-								return value;
-								break;
 							case "overdue":
 								if (format(today) > format(item.DueDate) && value === "Open") {
 									return value;
@@ -167,21 +171,18 @@ export default class ActivitiesDatatable extends JetView {
 								break;
 							case "completed":
 								return value === "Close";
-								break
 							case "today":
 								if (webix.Date.equal(format(item.DueDate), format(today))) {
 									return value;
 								}
 								break;
 							case "tomorrow":
-								const tomorrow = new Date(today.setDate(today.getDate() + 1));
-								if (webix.Date.equal(format(item.DueDate), format(tomorrow))) {
+								if (webix.Date.equal(format(item.DueDate),
+									format(new Date(today.setDate(today.getDate() + 1))))) {
 									return value;
 								}
 								break;
 							case "thisWeek":
-								const lastDayOfWeek = 7 - new Date(item.DueDate).getDay() + new Date(item.DueDate).getDate();
-								const firstDayOfWeek = lastDayOfWeek - 6;
 								if (lastDayOfWeek > today.getDate() && today.getDate() > firstDayOfWeek) {
 									return value;
 								}
@@ -191,7 +192,10 @@ export default class ActivitiesDatatable extends JetView {
 									return value;
 								}
 								break;
+							default:
+								return value;
 						}
+						return undefined;
 					}
 				},
 				{
@@ -202,10 +206,10 @@ export default class ActivitiesDatatable extends JetView {
 						view.setValue(value);
 					}
 				}
-			)
+			);
 			this.on(tabs, "onChange", () => {
 				table.filterByAll();
-			})
+			});
 		}
 	}
 

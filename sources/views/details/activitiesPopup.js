@@ -12,6 +12,7 @@ export default class ActivitiesPopup extends JetView {
 	}
 
 	config() {
+		const _ = this.app.getService("locale")._;
 		return {
 			view: "popup",
 			position: "center",
@@ -20,29 +21,32 @@ export default class ActivitiesPopup extends JetView {
 				rows: [
 					{
 						view: "template",
-						template: `${this.name} activity`,
+						template: `${_(`${this.name} Activity`)}`,
 						type: "header",
 						css: "text_align_center"
 					},
 					{
 						view: "form",
 						localId: "formInPopup",
+						elementsConfig: {
+							labelWidth: 100
+						},
 						elements: [
 							{
 								view: "text",
-								label: "Details",
+								label: _("Details"),
 								name: "Details"
 							},
 							{
 								view: "combo",
-								label: "Type",
+								label: _("Type"),
 								name: "TypeID",
 								options: activitiesTypeData,
 								required: true
 							},
 							{
 								view: "combo",
-								label: "Contact",
+								label: _("Contact"),
 								name: "ContactID",
 								localId: "ContactID",
 								options: contactsData,
@@ -50,14 +54,14 @@ export default class ActivitiesPopup extends JetView {
 							},
 							{
 								view: "datepicker",
-								label: "Date",
+								label: _("Date"),
 								timepicker: true,
 								name: "dateObj",
 								required: true
 							},
 							{
 								view: "checkbox",
-								label: "Confirmed",
+								label: _("Confirmed"),
 								name: "State",
 								checkValue: "Close",
 								uncheckValue: "Open"
@@ -66,7 +70,7 @@ export default class ActivitiesPopup extends JetView {
 					},
 					{
 						view: "button",
-						value: `${this.buttonName}`,
+						value: `${_(this.buttonName)}`,
 						css: "webix_primary",
 						click: () => {
 							const form = this.$getForm();
@@ -84,7 +88,7 @@ export default class ActivitiesPopup extends JetView {
 					},
 					{
 						view: "button",
-						value: "Cancel",
+						value: _("Cancel"),
 						css: "webix_primary",
 						click: () => {
 							this.clearForm();

@@ -10,8 +10,10 @@ const uploadingData = new webix.DataCollection({});
 
 export default class ContactsTemplate extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
+
 		const uploader = {
-			header: "Files",
+			header: _("Files"),
 			body: {
 				rows: [
 					{
@@ -22,20 +24,20 @@ export default class ContactsTemplate extends JetView {
 						columns: [
 							{
 								id: "name",
-								header: "Name",
+								header: _("Name"),
 								fillspace: true,
 								sort: "text"
 							},
 							{
 								id: "date",
-								header: "Change date",
+								header: _("Change date"),
 								format: webix.Date.dateToStr("%Y-%m-%d"),
 								sort: "date",
 								fillspace: true
 							},
 							{
 								id: "sizetext",
-								header: "Size",
+								header: _("Size"),
 								fillspace: true,
 								template: "#sizetext#",
 								sort: this.sortFilesSize
@@ -49,8 +51,8 @@ export default class ContactsTemplate extends JetView {
 						onClick: {
 							on_delete: (e, id) => {
 								this.webix.confirm({
-									title: "Deleting an entry",
-									text: "Do you want to delete entry?"
+									title: _("Deleting an entry"),
+									text: _("Do you want to delete entry?")
 								}).then(() => {
 									uploadingData.remove(id);
 								});
@@ -59,7 +61,7 @@ export default class ContactsTemplate extends JetView {
 					},
 					{
 						view: "uploader",
-						value: "Upload file",
+						value: _("Upload file"),
 						link: "filesTable",
 						upload: uploadingData,
 						autosend: false,
@@ -93,12 +95,12 @@ export default class ContactsTemplate extends JetView {
 								{},
 								{
 									view: "button",
-									value: "<span class='fas fa-trash'></span> Delete",
+									value: `<span class='fas fa-trash'></span> ${_("Delete")}`,
 									css: "webix_primary",
 									click: () => {
 										this.webix.confirm({
-											title: "Deleting an entry",
-											text: "Do you want to delete entry?"
+											title: _("Deleting an entry"),
+											text: _("Do you want to delete entry?")
 										}).then(() => {
 											const activitiesToDel = [];
 											const filesToDel = [];
@@ -126,7 +128,7 @@ export default class ContactsTemplate extends JetView {
 								},
 								{
 									view: "button",
-									value: "<span class='fas fa-pen on_edit'></span> Edit",
+									value: `<span class='fas fa-pen on_edit'></span> ${_("Edit")}`,
 									css: "webix_primary",
 									click: () => {
 										this.show(`contactsAddAndEdit?id=${this.contactId}`);
@@ -166,7 +168,7 @@ export default class ContactsTemplate extends JetView {
 					multiview: true,
 					cells: [
 						{
-							header: "Activities",
+							header: _("Activities"),
 							body: {
 								rows: [
 									ActivitiesDatatable,

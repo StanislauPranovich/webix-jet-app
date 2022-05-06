@@ -6,6 +6,7 @@ import statusesData from "../models/statusesData";
 
 export default class ContactsAddAndEdit extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 		const formToolbar = {
 			view: "toolbar",
@@ -14,7 +15,7 @@ export default class ContactsAddAndEdit extends JetView {
 				{gravity: 3},
 				{
 					view: "button",
-					value: "Cancel",
+					value: _("Cancel"),
 					css: "webix_primary",
 					click: () => {
 						const firstId = contactsData.getFirstId();
@@ -25,7 +26,7 @@ export default class ContactsAddAndEdit extends JetView {
 				},
 				{
 					view: "button",
-					value: `${this.getParam("id") ? "Save" : "Add"}`,
+					value: `${this.getParam("id") ? _("Save") : _("Add")}`,
 					css: "webix_primary",
 					click: () => {
 						const form = this.$getContactsForm();
@@ -68,7 +69,7 @@ export default class ContactsAddAndEdit extends JetView {
 							accept: "image/png, image/gif, image/jpeg",
 							apiOnly: true,
 							multiple: false,
-							value: "Change photo",
+							value: _("Change photo"),
 							autosend: false,
 							on: {
 								onBeforeFileAdd: (item) => {
@@ -87,7 +88,7 @@ export default class ContactsAddAndEdit extends JetView {
 						},
 						{
 							view: "button",
-							value: "Delete photo",
+							value: _("Delete photo"),
 							css: "webix_primary",
 							click: () => {
 								this.$$("upload").setValues({
@@ -104,52 +105,50 @@ export default class ContactsAddAndEdit extends JetView {
 			rows: [
 				{
 					view: "text",
-					label: "Firstname",
+					label: _("Firstname"),
 					name: "FirstName",
-					required: true,
-					labelWidth: 85
+					required: true
 				},
 				{
 					view: "text",
-					label: "Lastname",
+					label: _("Lastname"),
 					name: "LastName",
-					required: true,
-					labelWidth: 85
+					required: true
 				},
 				{
 					view: "datepicker",
-					label: "Joining",
+					label: _("Joining"),
 					name: "dayOfStart",
 					required: true
 				},
 				{
 					view: "combo",
-					label: "Status",
+					label: _("Status"),
 					name: "StatusID",
 					options: statusesData,
 					required: true
 				},
 				{
 					view: "text",
-					label: "Job",
+					label: _("Job"),
 					name: "Job",
 					required: true
 				},
 				{
 					view: "text",
-					label: "Company",
+					label: _("Company"),
 					name: "Company",
 					required: true
 				},
 				{
 					view: "text",
-					label: "Website",
+					label: _("Website"),
 					name: "Website",
 					required: true
 				},
 				{
 					view: "text",
-					label: "Address",
+					label: _("Address"),
 					name: "Address",
 					required: true
 				}
@@ -160,27 +159,27 @@ export default class ContactsAddAndEdit extends JetView {
 			rows: [
 				{
 					view: "text",
-					label: "Email",
+					label: _("Email"),
 					name: "Email",
 					required: true,
 					validate: webix.rules.isEmail
 				},
 				{
 					view: "text",
-					label: "Skype",
+					label: _("Skype"),
 					name: "Skype",
 					required: true
 				},
 				{
 					view: "text",
-					label: "Phone",
+					label: _("Phone"),
 					name: "Phone",
 					required: true,
 					validate: webix.rules.isNumber
 				},
 				{
 					view: "datepicker",
-					label: "Birthday",
+					label: _("Birthday"),
 					name: "dayOfBirth",
 					required: true
 				},
@@ -193,9 +192,12 @@ export default class ContactsAddAndEdit extends JetView {
 				{
 					view: "form",
 					localId: "contactsForm",
+					elementsConfig: {
+						labelWidth: 125
+					},
 					elements: [
 						{
-							template: `${this.getParam("id") ? "Edit" : "Add new"} Contact`,
+							template: `${this.getParam("id") ? _("Edit contact") : _("Add new contact")}`,
 							type: "section"
 						},
 						{
