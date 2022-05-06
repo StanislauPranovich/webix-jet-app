@@ -1,7 +1,7 @@
-import {JetView} from "webix-jet";
+import { JetView } from "webix-jet";
 
 import contactsData from "../models/contactsData";
-
+import statusesData from "../models/statusesData";
 
 export default class ContactsView extends JetView {
 	config() {
@@ -10,6 +10,11 @@ export default class ContactsView extends JetView {
 			cols: [
 				{
 					rows: [
+						{
+							view: "text",
+							placeholder: "type to find contacts",
+							localId: "listFilter"
+						},
 						{
 							view: "list",
 							localId: "listOfContacts",
@@ -33,7 +38,7 @@ export default class ContactsView extends JetView {
 						}
 					]
 				},
-				{$subview: true}
+				{ $subview: true }
 			]
 		};
 	}
@@ -42,8 +47,13 @@ export default class ContactsView extends JetView {
 		return this.$$("listOfContacts");
 	}
 
+	$getListFilter() {
+		return this.$$("listFilter");
+	}
+
 	init() {
 		const listOfContacts = this.$getListOfContacts();
+		const listFilter = this.$getListFilter();
 		listOfContacts.parse(contactsData);
 		this.on(listOfContacts, "onAfterSelect", (id) => {
 			this.show(`contactsTemplate?id=${id}`);
@@ -65,5 +75,38 @@ export default class ContactsView extends JetView {
 		this.on(this.app, "onAfterCancelAdd", (id) => {
 			listOfContacts.select(id);
 		});
+		this.on(listFilter, "onTimedKeyPress", () => {
+			const text = listFilter.getValue().toString().toLowerCase();
+			listOfContacts.filter(obj => {
+				let contactTextValues = [];
+				for (let item in obj) {
+					if (!Number(obj[item]) && item !== "Photo" && !Number(parseInt(obj[item]))) {
+						contactTextValues.push(obj[item])
+					}
+				}
+				let filter = [contactTextValues, statusesData.getItem(obj.StatusID).value].join("|");
+				filter = filter.toString().toLowerCase();
+				const birthdayDate = parseInt(obj.Birthday);
+				const equalsBirthday = parseInt(text.replace("=", ""));
+				const lessThanBirthday = parseInt(text.replace(">", ""));
+				const moreThanBirthday = parseInt(text.replace("<", ""));
+				if (text.includes("=")) {
+					if(birthdayDate === equalsBirthday) {
+						return obj;
+					}
+				} else if (text.includes(">")) {
+					if(birthdayDate > lessThanBirthday) {
+						return obj;
+					}
+				} else if(text.includes("<")) {
+					if(birthdayDate < moreThanBirthday) {
+						return obj;
+					}
+				}
+				else {
+					return filter.indexOf(text) !== -1
+				}
+			})
+		})
 	}
 }
