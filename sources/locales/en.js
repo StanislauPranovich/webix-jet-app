@@ -48,5 +48,9 @@ export default {
 	"This week": "This week",
 	"This month": "This month",
 	"Add new contact": "Add new contact",
-	"Edit contact": "Edit contact"
+	"Edit contact": "Edit contact",
+	Value: "Value",
+	Icon: "Icon",
+	"Add ActivityType": "Add ActivityType",
+	"Add Statuses": "Add Statuses"
 };

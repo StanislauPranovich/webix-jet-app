@@ -108,3 +108,10 @@
     vertical-align: middle;
     margin-right: 5px;
 }
+.list_filter {
+    background-color: white;
+    padding-bottom: 6px;
+}
+.list_filter input {
+    border: none
+}

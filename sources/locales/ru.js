@@ -48,5 +48,9 @@ export default {
 	"This week": "На этой неделе",
 	"This month": "В этом месяце",
 	"Add new contact": "Добавить новый контакт",
-	"Edit contact": "Редактировать контакт"
+	"Edit contact": "Редактировать контакт",
+	Value: "Значение",
+	Icon: "Изображение",
+	"Add ActivityType": "Добавить тип мероприятия",
+	"Add Statuses": "Добавить статус"
 };

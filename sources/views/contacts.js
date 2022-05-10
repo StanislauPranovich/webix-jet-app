@@ -14,7 +14,8 @@ export default class ContactsView extends JetView {
 						{
 							view: "text",
 							placeholder: _("Type to find contacts"),
-							localId: "listFilter"
+							localId: "listFilter",
+							css: "list_filter"
 						},
 						{
 							view: "list",
