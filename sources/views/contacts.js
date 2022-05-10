@@ -86,7 +86,8 @@ export default class ContactsView extends JetView {
 						contactTextValues.push(obj[item]);
 					}
 				}
-				let filter = [contactTextValues, statusesData.getItem(obj.StatusID).value].join("|");
+				const status = statusesData.getItem(obj.StatusID);
+				let filter = [contactTextValues, status ? status.value : "No Status"].join("|");
 				filter = filter.toString().toLowerCase();
 				const birthdayDate = parseInt(obj.Birthday);
 				const equalsBirthday = parseInt(text.replace("=", ""));
