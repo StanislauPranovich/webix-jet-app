@@ -153,63 +153,7 @@ export default class ActivitiesDatatable extends JetView {
 			tabs.hide();
 		}
 		else {
-			table.registerFilter(
-				tabs,
-				{
-					columnId: "State",
-					compare(value, filter, item) {
-						const today = new Date();
-						const format = webix.Date.dateToStr("%Y-%m-%d");
-						const lastDayOfWeek = 7 - new Date(item.DueDate).getDay() +
-							new Date(item.DueDate).getDate();
-						const firstDayOfWeek = lastDayOfWeek - 6;
-						switch (filter) {
-							case "overdue":
-								if (format(today) > format(item.DueDate) && value === "Open") {
-									return value;
-								}
-								break;
-							case "completed":
-								return value === "Close";
-							case "today":
-								if (webix.Date.equal(format(item.DueDate), format(today))) {
-									return value;
-								}
-								break;
-							case "tomorrow":
-								if (webix.Date.equal(format(item.DueDate),
-									format(new Date(today.setDate(today.getDate() + 1))))) {
-									return value;
-								}
-								break;
-							case "thisWeek":
-								if (lastDayOfWeek > today.getDate() && today.getDate() > firstDayOfWeek) {
-									return value;
-								}
-								break;
-							case "thisMonth":
-								if (today.getMonth() === new Date(item.DueDate).getMonth()) {
-									return value;
-								}
-								break;
-							default:
-								return value;
-						}
-						return undefined;
-					}
-				},
-				{
-					getValue(view) {
-						return view.getValue();
-					},
-					setValue(view, value) {
-						view.setValue(value);
-					}
-				}
-			);
-			this.on(tabs, "onChange", () => {
-				table.filterByAll();
-			});
+			this.compareActivities();
 		}
 	}
 
@@ -220,5 +164,67 @@ export default class ActivitiesDatatable extends JetView {
 			table.filter(obj => `${obj.ContactID}` === contactId);
 			table.filterByAll();
 		}
+	}
+
+	compareActivities() {
+		const table = this.$getActivitiesTable();
+		const tabs = this.$getActivitiesTabs();
+		table.registerFilter(
+			tabs,
+			{
+				columnId: "State",
+				compare(value, filter, item) {
+					const today = webix.Date.dayStart(new Date());
+					const itemDate = webix.Date.dayStart(item.DueDate);
+					const firstDayOfWeek = webix.Date.add(webix.Date.weekStart(today), 1, "day", true);
+					const lastDayOfWeek = webix.Date.add(firstDayOfWeek, 6, "day", true);
+					switch (filter) {
+						case "overdue":
+							if (today > itemDate && value === "Open") {
+								return value;
+							}
+							break;
+						case "completed":
+							return value === "Close";
+						case "today":
+							if (webix.Date.equal(itemDate, today)) {
+								return value;
+							}
+							break;
+						case "tomorrow":
+							if (webix.Date.equal(itemDate,
+								webix.Date.add(today, 1, "day", true))) {
+								return value;
+							}
+							break;
+						case "thisWeek":
+							if (lastDayOfWeek >= itemDate && firstDayOfWeek <= itemDate) {
+								return value;
+							}
+							break;
+						case "thisMonth":
+							if (today.getMonth() === itemDate.getMonth() &&
+							today.getFullYear() === itemDate.getFullYear()) {
+								return value;
+							}
+							break;
+						default:
+							return value;
+					}
+					return undefined;
+				}
+			},
+			{
+				getValue(view) {
+					return view.getValue();
+				},
+				setValue(view, value) {
+					view.setValue(value);
+				}
+			}
+		);
+		this.on(tabs, "onChange", () => {
+			table.filterByAll();
+		});
 	}
 }

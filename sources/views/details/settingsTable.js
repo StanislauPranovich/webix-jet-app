@@ -51,7 +51,7 @@ export default class SettingsTable extends JetView {
 					cols: [
 						{
 							view: "text",
-							localId: `${this.name}Input`
+							localId: "input"
 						},
 						{
 							view: "button",
@@ -76,7 +76,7 @@ export default class SettingsTable extends JetView {
 	}
 
 	$getInput() {
-		return this.$$(`${this.name}Input`);
+		return this.$$("input");
 	}
 
 	$getTable() {
@@ -86,8 +86,5 @@ export default class SettingsTable extends JetView {
 	init() {
 		const table = this.$getTable();
 		table.parse(this.data);
-		this.on(table, "onAfterEditStop", (state, editor) => {
-			this.data.updateItem(editor.row, {value: state.value});
-		});
 	}
 }

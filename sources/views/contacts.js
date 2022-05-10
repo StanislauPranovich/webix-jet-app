@@ -78,38 +78,48 @@ export default class ContactsView extends JetView {
 			listOfContacts.select(id);
 		});
 		this.on(listFilter, "onTimedKeyPress", () => {
-			const text = listFilter.getValue().toString().toLowerCase();
-			listOfContacts.filter((obj) => {
-				let contactTextValues = [];
-				for (let item in obj) {
-					if (!Number(obj[item]) && item !== "Photo" && !Number(parseInt(obj[item]))) {
-						contactTextValues.push(obj[item]);
+			const text = listFilter.getValue().toLowerCase().trim();
+			if (text) {
+				listOfContacts.filter((obj) => {
+					let contactTextValues = [];
+					for (let item in obj) {
+						if (!Number(obj[item]) && item !== "Photo" && item !== "Birthday" && item !== "StartDate") {
+							contactTextValues.push(obj[item]);
+						}
 					}
-				}
-				const status = statusesData.getItem(obj.StatusID);
-				let filter = [contactTextValues, status ? status.value : "No Status"].join("|");
-				filter = filter.toString().toLowerCase();
-				const birthdayDate = parseInt(obj.Birthday);
-				const equalsBirthday = parseInt(text.replace("=", ""));
-				const lessThanBirthday = parseInt(text.replace(">", ""));
-				const moreThanBirthday = parseInt(text.replace("<", ""));
-				if (text.includes("=")) {
-					if (birthdayDate === equalsBirthday) {
-						return obj;
+					const status = statusesData.getItem(obj.StatusID);
+					let filter = [contactTextValues, status ? status.value : "No Status"].join("|");
+					filter = filter.toLowerCase();
+					if (text.includes("=") || text.includes(">") || text.includes("<")) {
+						const birthdayDate = parseInt(obj.Birthday);
+						const equalsBirthday = parseInt(text.replace("=", ""));
+						const lessThanBirthday = parseInt(text.replace(">", ""));
+						const moreThanBirthday = parseInt(text.replace("<", ""));
+						if (text.includes("=")) {
+							if (birthdayDate === equalsBirthday) {
+								return birthdayDate;
+							}
+						}
+						else if (text.includes(">")) {
+							if (birthdayDate > lessThanBirthday) {
+								return birthdayDate;
+							}
+						}
+						else if (text.includes("<")) {
+							if (birthdayDate < moreThanBirthday) {
+								return birthdayDate;
+							}
+						}
 					}
-				}
-				else if (text.includes(">")) {
-					if (birthdayDate > lessThanBirthday) {
-						return obj;
+					else {
+						return filter.indexOf(text) !== -1;
 					}
-				}
-				else if (text.includes("<")) {
-					if (birthdayDate < moreThanBirthday) {
-						return obj;
-					}
-				}
-				return filter.indexOf(text) !== -1;
-			});
+					return undefined;
+				});
+			}
+			else {
+				listOfContacts.filter();
+			}
 		});
 	}
 }

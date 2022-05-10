@@ -17,7 +17,7 @@ export default class SettingsView extends JetView {
 						{id: "ru", value: "ru-RU"}
 					],
 					on: {
-						onChange: id => webix.delay(() => this.SetLocale(id))
+						onChange: id => this.SetLocale(id)
 					}
 				},
 				{
