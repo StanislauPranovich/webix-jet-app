@@ -82,12 +82,12 @@ export default class ContactsView extends JetView {
 	filterContacts() {
 		const listOfContacts = this.$getListOfContacts();
 		const listFilter = this.$getListFilter();
+		const filteredFields = ["FirstName", "LastName", "Address", "Company", "Job", "Website", "Email", "Skype"];
 		this.on(listFilter, "onTimedKeyPress", () => {
 			const text = listFilter.getValue().toLowerCase().trim();
 			const nullSymbol = text[0];
 			if (text) {
 				listOfContacts.filter((obj) => {
-					const filteredFields = ["FirstName", "LastName", "Address", "Company", "Job", "Website", "Email", "Skype"];
 					let contactTextValues = [];
 					for (let field of filteredFields) {
 						if (obj[field]) {
@@ -95,7 +95,7 @@ export default class ContactsView extends JetView {
 						}
 					}
 					const status = statusesData.getItem(obj.StatusID);
-					let filter = [contactTextValues, status ? status.value : "No Status"].join();
+					let filter = [contactTextValues, status ? status.value : ""].join();
 					filter = filter.toLowerCase();
 					if ((nullSymbol === "=" || nullSymbol === ">" || nullSymbol === "<") && Number.isInteger(+text[1])) {
 						const birthdayDate = parseInt(obj.Birthday);
