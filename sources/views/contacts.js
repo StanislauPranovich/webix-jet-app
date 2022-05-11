@@ -97,7 +97,7 @@ export default class ContactsView extends JetView {
 					const status = statusesData.getItem(obj.StatusID);
 					let filter = [contactTextValues, status ? status.value : "No Status"].join();
 					filter = filter.toLowerCase();
-					if ((nullSymbol === "=" || ">" || "<") && Number.isInteger(+text[1])) {
+					if ((nullSymbol === "=" || nullSymbol === ">" || nullSymbol === "<") && Number.isInteger(+text[1])) {
 						const birthdayDate = parseInt(obj.Birthday);
 						const equalsBirthday = +text.slice(1, text.length);
 						if (nullSymbol === "=") {
