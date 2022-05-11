@@ -115,9 +115,6 @@ export default class ContactsView extends JetView {
 								return true;
 							}
 						}
-						else {
-							return filter.indexOf(text) !== -1;
-						}
 					}
 					else {
 						return filter.indexOf(text) !== -1;
