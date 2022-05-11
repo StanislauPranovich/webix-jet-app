@@ -55,7 +55,6 @@ export default class ContactsView extends JetView {
 
 	init() {
 		const listOfContacts = this.$getListOfContacts();
-		const listFilter = this.$getListFilter();
 		listOfContacts.parse(contactsData);
 		this.on(listOfContacts, "onAfterSelect", (id) => {
 			this.show(`contactsTemplate?id=${id}`);
@@ -77,44 +76,53 @@ export default class ContactsView extends JetView {
 		this.on(this.app, "onAfterCancelAdd", (id) => {
 			listOfContacts.select(id);
 		});
+		this.filterContacts();
+	}
+
+	filterContacts() {
+		const listOfContacts = this.$getListOfContacts();
+		const listFilter = this.$getListFilter();
 		this.on(listFilter, "onTimedKeyPress", () => {
 			const text = listFilter.getValue().toLowerCase().trim();
+			const nullSymbol = text[0];
 			if (text) {
 				listOfContacts.filter((obj) => {
+					const filteredFields = ["FirstName", "LastName", "Address", "Company", "Job", "Website", "Email", "Skype"];
 					let contactTextValues = [];
-					for (let item in obj) {
-						if (!Number(obj[item]) && item !== "Photo" && item !== "Birthday" && item !== "StartDate") {
-							contactTextValues.push(obj[item]);
+					for (let field of filteredFields) {
+						if (obj[field]) {
+							contactTextValues.push(obj[field]);
 						}
 					}
 					const status = statusesData.getItem(obj.StatusID);
-					let filter = [contactTextValues, status ? status.value : "No Status"].join("|");
+					let filter = [contactTextValues, status ? status.value : "No Status"].join();
 					filter = filter.toLowerCase();
-					if (text.includes("=") || text.includes(">") || text.includes("<")) {
+					if ((nullSymbol === "=" || ">" || "<") && Number.isInteger(+text[1])) {
 						const birthdayDate = parseInt(obj.Birthday);
-						const equalsBirthday = parseInt(text.replace("=", ""));
-						const lessThanBirthday = parseInt(text.replace(">", ""));
-						const moreThanBirthday = parseInt(text.replace("<", ""));
-						if (text.includes("=")) {
-							if (birthdayDate === equalsBirthday) {
-								return birthdayDate;
+						const equalsBirthday = +text.slice(1, text.length);
+						if (nullSymbol === "=") {
+							if (equalsBirthday === birthdayDate) {
+								return true;
 							}
 						}
-						else if (text.includes(">")) {
-							if (birthdayDate > lessThanBirthday) {
-								return birthdayDate;
+						else if (nullSymbol === ">") {
+							if (birthdayDate > equalsBirthday) {
+								return true;
 							}
 						}
-						else if (text.includes("<")) {
-							if (birthdayDate < moreThanBirthday) {
-								return birthdayDate;
+						else if (nullSymbol === "<") {
+							if (birthdayDate < equalsBirthday) {
+								return true;
 							}
+						}
+						else {
+							return filter.indexOf(text) !== -1;
 						}
 					}
 					else {
 						return filter.indexOf(text) !== -1;
 					}
-					return undefined;
+					return false;
 				});
 			}
 			else {

@@ -51,6 +51,5 @@ export default {
 	"Edit contact": "Редактировать контакт",
 	Value: "Значение",
 	Icon: "Изображение",
-	"Add ActivityType": "Добавить тип мероприятия",
-	"Add Statuses": "Добавить статус"
+	"Add Status": "Добавить статус"
 };

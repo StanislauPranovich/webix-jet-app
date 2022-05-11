@@ -17,13 +17,13 @@ export default class SettingsView extends JetView {
 						{id: "ru", value: "ru-RU"}
 					],
 					on: {
-						onChange: id => this.SetLocale(id)
+						onChange: id => webix.delay(() => this.SetLocale(id))
 					}
 				},
 				{
 					cols: [
-						new SettingsTable(this.app, "ActivityType", activitiesTypeData),
-						new SettingsTable(this.app, "Statuses", statusesData)
+						new SettingsTable(this.app, "Activity", activitiesTypeData),
+						new SettingsTable(this.app, "Status", statusesData)
 					]
 				}
 			]

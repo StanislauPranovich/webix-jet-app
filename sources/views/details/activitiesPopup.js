@@ -21,7 +21,7 @@ export default class ActivitiesPopup extends JetView {
 				rows: [
 					{
 						view: "template",
-						template: `${_(`${this.name} Activity`)}`,
+						template: _(`${this.name} Activity`),
 						type: "header",
 						css: "text_align_center"
 					},
@@ -70,7 +70,7 @@ export default class ActivitiesPopup extends JetView {
 					},
 					{
 						view: "button",
-						value: `${_(this.buttonName)}`,
+						value: _(this.buttonName),
 						css: "webix_primary",
 						click: () => {
 							const form = this.$getForm();

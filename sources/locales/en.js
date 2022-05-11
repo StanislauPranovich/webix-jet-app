@@ -51,6 +51,5 @@ export default {
 	"Edit contact": "Edit contact",
 	Value: "Value",
 	Icon: "Icon",
-	"Add ActivityType": "Add ActivityType",
-	"Add Statuses": "Add Statuses"
+	"Add Status": "Add Status"
 };

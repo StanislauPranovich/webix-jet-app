@@ -55,7 +55,7 @@ export default class SettingsTable extends JetView {
 						},
 						{
 							view: "button",
-							value: _(`${`Add ${this.name}`}`),
+							value: _(`Add ${this.name}`),
 							css: "webix_primary",
 							click: () => {
 								const input = this.$getInput();
