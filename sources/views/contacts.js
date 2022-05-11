@@ -1,15 +1,22 @@
 import {JetView} from "webix-jet";
 
 import contactsData from "../models/contactsData";
-
+import statusesData from "../models/statusesData";
 
 export default class ContactsView extends JetView {
 	config() {
+		const _ = this.app.getService("locale")._;
 		const notFound = "https://user-images.githubusercontent.com/24848110/33519396-7e56363c-d79d-11e7-969b-09782f5ccbab.png";
 		return {
 			cols: [
 				{
 					rows: [
+						{
+							view: "text",
+							placeholder: _("Type to find contacts"),
+							localId: "listFilter",
+							css: "list_filter"
+						},
 						{
 							view: "list",
 							localId: "listOfContacts",
@@ -25,7 +32,7 @@ export default class ContactsView extends JetView {
 						{
 							view: "button",
 							localId: "addButton",
-							value: "<span class='fas fa-plus'></span> Add Contact",
+							value: `<span class='fas fa-plus'></span> ${_("Add Contact")}`,
 							css: "webix_primary",
 							click: () => {
 								this.show("contactsAddAndEdit");
@@ -40,6 +47,10 @@ export default class ContactsView extends JetView {
 
 	$getListOfContacts() {
 		return this.$$("listOfContacts");
+	}
+
+	$getListFilter() {
+		return this.$$("listFilter");
 	}
 
 	init() {
@@ -64,6 +75,56 @@ export default class ContactsView extends JetView {
 		});
 		this.on(this.app, "onAfterCancelAdd", (id) => {
 			listOfContacts.select(id);
+		});
+		this.filterContacts();
+	}
+
+	filterContacts() {
+		const listOfContacts = this.$getListOfContacts();
+		const listFilter = this.$getListFilter();
+		const filteredFields = ["FirstName", "LastName", "Address", "Company", "Job", "Website", "Email", "Skype"];
+		this.on(listFilter, "onTimedKeyPress", () => {
+			const text = listFilter.getValue().toLowerCase().trim();
+			const nullSymbol = text[0];
+			if (text) {
+				listOfContacts.filter((obj) => {
+					let contactTextValues = [];
+					for (let field of filteredFields) {
+						if (obj[field]) {
+							contactTextValues.push(obj[field]);
+						}
+					}
+					const status = statusesData.getItem(obj.StatusID);
+					let filter = [contactTextValues, status ? status.value : ""].join();
+					filter = filter.toLowerCase();
+					if ((nullSymbol === "=" || nullSymbol === ">" || nullSymbol === "<") && Number.isInteger(+text[1])) {
+						const birthdayDate = parseInt(obj.Birthday);
+						const equalsBirthday = +text.slice(1, text.length);
+						if (nullSymbol === "=") {
+							if (equalsBirthday === birthdayDate) {
+								return true;
+							}
+						}
+						else if (nullSymbol === ">") {
+							if (birthdayDate > equalsBirthday) {
+								return true;
+							}
+						}
+						else if (nullSymbol === "<") {
+							if (birthdayDate < equalsBirthday) {
+								return true;
+							}
+						}
+					}
+					else {
+						return filter.indexOf(text) !== -1;
+					}
+					return false;
+				});
+			}
+			else {
+				listOfContacts.filter();
+			}
 		});
 	}
 }
